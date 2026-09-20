@@ -173,6 +173,30 @@ input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
     color: var(--text-muted); font-size: 0.9rem;
     text-align: center; margin: 12px 0 16px; line-height: 1.4;
 }
+.network-box {
+    background: var(--bg-card); border: 1px solid var(--border-soft);
+    border-radius: var(--radius); padding: 16px; margin: 0 0 16px;
+    box-shadow: var(--shadow-sm);
+}
+.network-label {
+    color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 8px; font-weight: 700;
+}
+.ip-value {
+    font-size: 1.05rem; line-height: 1.5; font-weight: 700;
+    word-break: break-all;
+    color: var(--text);
+}
+.qr-meta {
+    margin-top: 8px; color: var(--text-muted); font-size: 0.8rem;
+}
+.field-group {
+    margin-bottom: 16px;
+}
+.field-group label {
+    display: block; color: var(--text-muted); font-size: 0.8rem;
+    margin-bottom: 8px; font-weight: 600;
+}
 .qr-container {
     display: flex; justify-content: center; align-items: center;
     padding: 16px; background: #fff;
@@ -253,13 +277,13 @@ input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
 
         <div id="screen-home" class="screen active">
             <div class="card-grid">
-                <div class="card" data-goto="send">
+                <div class="card" data-goto="send" tabindex="0">
                     <div class="card-top"><span class="card-icon">📤</span></div>
                     <h2>Отправить файл</h2>
                     <p>Выбрать файлы и передать по Wi-Fi</p>
                     <span class="card-arrow">→</span>
                 </div>
-                <div class="card" data-goto="receive">
+                <div class="card" data-goto="receive" tabindex="0">
                     <div class="card-top"><span class="card-icon">📥</span></div>
                     <h2>Получить файл</h2>
                     <p>Показать QR-код и принять</p>
@@ -273,7 +297,7 @@ input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
             <a href="https://axkuon.ru" target="_blank" rel="noopener" class="community-btn">✨ СООБЩЕСТВО AXKUON</a>
         </div>
 
-        <!-- ОТПРАВИТЕЛЬ: файл → сканирование QR получателя → показ ответа → передача -->
+        <!-- ОТПРАВИТЕЛЬ -->
         <div id="screen-send" class="screen">
             <div id="send-step-select" class="step active">
                 <div class="section-header">
@@ -305,8 +329,18 @@ input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
                         </div>
                     </div>
                 </div>
-                <p class="hint">Наведите камеру на QR-код получателя</p>
-                <div class="scanner-container">
+                <p class="hint">Наведите камеру на QR-код получателя или вставьте IP вручную</p>
+                <div class="network-box">
+                    <div class="network-label">Ваш адрес</div>
+                    <div class="ip-value" id="send-ip-value">Определяем IP…</div>
+                    <div class="qr-meta">Отправитель подключается к этому адресу</div>
+                </div>
+                <div class="field-group">
+                    <label for="manual-ip-input">IP получателя</label>
+                    <input id="manual-ip-input" type="text" placeholder="192.168.0.10:45000" autocomplete="off">
+                </div>
+                <button class="btn btn-primary" id="btn-connect-manual" type="button">Подключиться по IP</button>
+                <div class="scanner-container" style="margin-top:16px;">
                     <video id="send-scanner-video" playsinline muted></video>
                     <canvas id="send-scanner-canvas" hidden></canvas>
                     <div class="scan-overlay"><div class="scan-box"></div></div>
@@ -349,7 +383,7 @@ input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
             </div>
         </div>
 
-        <!-- ПОЛУЧАТЕЛЬ: показ QR → сканирование ответа → приём -->
+        <!-- ПОЛУЧАТЕЛЬ -->
         <div id="screen-receive" class="screen">
             <div id="recv-step-show-qr" class="step active">
                 <div class="section-header">
@@ -365,6 +399,11 @@ input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
                 <p class="hint">Покажите этот QR-код отправителю</p>
                 <div class="qr-container" id="offer-qr-wrap">
                     <canvas id="offer-qr-canvas"></canvas>
+                </div>
+                <div class="network-box">
+                    <div class="network-label">Ваш IP</div>
+                    <div class="ip-value" id="receive-ip-value">Определяем IP…</div>
+                    <div class="qr-meta">Этот адрес можно также ввести вручную в программе</div>
                 </div>
                 <button class="btn btn-primary" id="btn-scan-answer">📷 Сканировать ответ отправителя</button>
             </div>
@@ -414,7 +453,19 @@ input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
 
 <script>
 /* ============================================
-   UI утилиты
+   КОНСТАНТЫ
+   ============================================ */
+
+const FILEDROP_PORT = 45000;
+const FILEDROP_PREFIX = 'FILEDROP';
+
+let selectedFiles = [];
+let currentLocalAddress = null;
+let currentQRText = '';
+let activeScanner = null;
+
+/* ============================================
+   UI УТИЛИТЫ
    ============================================ */
 
 function initTheme() {
@@ -471,12 +522,6 @@ function formatSize(bytes) {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
-function formatSpeed(bps) {
-    if (!bps || bps < 1) return '';
-    if (bps < 1024) return `${bps.toFixed(0)} Б/с`;
-    if (bps < 1024 * 1024) return `${(bps / 1024).toFixed(1)} КБ/с`;
-    return `${(bps / (1024 * 1024)).toFixed(1)} МБ/с`;
-}
 function escapeHtml(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
@@ -484,7 +529,9 @@ function isIOS() {
     return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
+
 const SCREEN_TITLES = { home: 'FileDrop', send: 'Отправить файл', receive: 'Получить файл' };
+
 function showScreen(name) {
     document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
     const target = document.getElementById('screen-' + name);
@@ -495,8 +542,9 @@ function showScreen(name) {
 }
 
 /* ============================================
-   Генератор QR (qrcode-generator, MIT)
+   ГЕНЕРАТОР QR (MiniQR — встроенный, MIT)
    ============================================ */
+
 (function(global){
     'use strict';
 
@@ -990,6 +1038,10 @@ function showScreen(name) {
     };
 })(window);
 
+/* ============================================
+   QR: РИСОВАНИЕ
+   ============================================ */
+
 async function drawQR(canvas, text, wrapEl) {
     if (!canvas) return false;
     try {
@@ -1010,16 +1062,333 @@ async function drawQR(canvas, text, wrapEl) {
     }
 }
 
+/* ============================================
+   АДРЕС / IP
+   ============================================ */
+
+function normalizeIp(value) {
+    if (!value) return '';
+    return String(value).trim().replace(/^https?:\/\//i, '').replace(/\/$/, '');
+}
+
+function parseAddressFromString(value) {
+    const raw = normalizeIp(value);
+    if (!raw) return null;
+    const match = raw.match(/FILEDROP\s*[:|]\s*([^\s|:]+)(?::(\d+))?/i) || raw.match(/([^\s|:]+)(?::(\d+))?/);
+    if (!match) return null;
+    const ip = match[1];
+    const port = match[2] || FILEDROP_PORT;
+    return { ip, port: Number(port) };
+}
+
+function buildConnectionString(ip, port = FILEDROP_PORT) {
+    const cleanIp = normalizeIp(ip);
+    return `${FILEDROP_PREFIX}:${cleanIp}:${port}`;
+}
+
+function getLocalAddressFallback() {
+    const host = window.location.hostname;
+    if (host && host !== 'localhost' && host !== '127.0.0.1' && host !== '0.0.0.0') return host;
+    return '127.0.0.1';
+}
+
+function getLocalAddress() {
+    return new Promise((resolve) => {
+        if (!window.RTCPeerConnection && !window.webkitRTCPeerConnection) {
+            resolve(getLocalAddressFallback());
+            return;
+        }
+
+        const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        const RTCPeer = window.RTCPeerConnection || window.webkitRTCPeerConnection;
+        const pc = new RTCPeer(servers);
+        const candidates = [];
+
+        pc.onicecandidate = (event) => {
+            if (!event.candidate || !event.candidate.candidate) return;
+            const text = event.candidate.candidate;
+            const match = text.match(/candidate:(?:.*) (\d+\.\d+\.\d+\.\d+)/);
+            if (!match) return;
+            const ip = match[1];
+            if (ip && ip !== '0.0.0.0' && !ip.startsWith('127.')) {
+                candidates.push(ip);
+            }
+        };
+
+        pc.createDataChannel('filedrop');
+        pc.createOffer().then((offer) => pc.setLocalDescription(offer)).catch(() => resolve(getLocalAddressFallback()));
+
+        setTimeout(() => {
+            const chosen = candidates[0] || getLocalAddressFallback();
+            resolve(chosen);
+            pc.close();
+        }, 1000);
+    });
+}
+
+async function updateConnectionInfo() {
+    const ip = currentLocalAddress || await getLocalAddress();
+    currentLocalAddress = ip;
+    const addr = `${ip}:${FILEDROP_PORT}`;
+    const qrText = buildConnectionString(ip, FILEDROP_PORT);
+    currentQRText = qrText;
+
+    const sendIpEl = document.getElementById('send-ip-value');
+    const recvIpEl = document.getElementById('receive-ip-value');
+    if (sendIpEl) sendIpEl.textContent = addr;
+    if (recvIpEl) recvIpEl.textContent = addr;
+
+    const offerCanvas = document.getElementById('offer-qr-canvas');
+    if (offerCanvas) {
+        await drawQR(offerCanvas, qrText, document.getElementById('offer-qr-wrap'));
+    }
+}
+
+/* ============================================
+   ВЫБОР ФАЙЛОВ
+   ============================================ */
+
+function renderSelectedFiles() {
+    const zone = document.getElementById('drop-zone');
+    if (!zone) return;
+    if (!selectedFiles.length) {
+        zone.classList.remove('has-files');
+        zone.innerHTML = '<input type="file" id="file-input" multiple hidden><div class="plus">+</div><div class="drop-title">Выбрать файл</div><div class="drop-hint">Перетащите или выберите из хранилища</div>';
+        const input = document.getElementById('file-input');
+        if (input) {
+            input.addEventListener('change', handleFileSelection);
+        }
+        return;
+    }
+
+    zone.classList.add('has-files');
+    const list = selectedFiles.map(file => `
+        <div class="file-item">
+            <span class="file-name">${escapeHtml(file.name)}</span>
+            <span class="file-size">${formatSize(file.size)}</span>
+        </div>
+    `).join('');
+
+    zone.innerHTML = `
+        <div class="drop-title">Выбранные файлы</div>
+        <div class="file-list">${list}</div>
+    `;
+}
+
+function handleFileSelection(event) {
+    const files = event.target.files || [];
+    selectedFiles = Array.from(files);
+    renderSelectedFiles();
+    showStep('send', 'send-step-scan');
+    updateConnectionInfo().catch(() => {
+        const ip = getLocalAddressFallback();
+        currentLocalAddress = ip;
+        const addr = `${ip}:${FILEDROP_PORT}`;
+        const sendIpEl = document.getElementById('send-ip-value');
+        const recvIpEl = document.getElementById('receive-ip-value');
+        if (sendIpEl) sendIpEl.textContent = addr;
+        if (recvIpEl) recvIpEl.textContent = addr;
+    });
+    showToast('Файлы добавлены. Укажите IP или отсканируйте QR.', 'info', 3000);
+}
+
+/* ============================================
+   QR-СКАНЕР
+   ============================================ */
+
 function startQRScanner(video, canvas, onResult) {
-    if (typeof jsQR === 'undefined') {
-        showToast('Сканер QR не загружен. Проверьте интернет.', 'error', 5000);
+    if (!video || !canvas || typeof jsQR === 'undefined') {
+        showToast('QR-сканер недоступен. Введите IP вручную.', 'error', 3000);
         return () => {};
     }
+
     let stream = null;
     let rafId = null;
     let stopped = false;
+
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
+    async function scanLoop() {
+        if (stopped) return;
+        if (video.readyState === video.HAVE_CURRENT_DATA) {
+            const w = video.videoWidth;
+            const h = video.videoHeight;
+            if (w && h) {
+                canvas.width = w;
+                canvas.height = h;
+                ctx.drawImage(video, 0, 0, w, h);
+                const image = ctx.getImageData(0, 0, w, h);
+                const result = jsQR(image.data, w, h, { inversionAttempts: 'dontInvert' });
+                if (result && result.data) {
+                    stopped = true;
+                    const data = String(result.data).trim();
+                    if (typeof onResult === 'function') onResult(data);
+                    if (stream) stream.getTracks().forEach((track) => track.stop());
+                    return;
+                }
+            }
+        }
+        rafId = requestAnimationFrame(scanLoop);
+    }
+
     async function start() {
-        stream = await navigator.mediaDevices.getUserMedia({
-            video: { facing... (осталось: 27 кб)
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            video.srcObject = stream;
+            await video.play();
+            rafId = requestAnimationFrame(scanLoop);
+        } catch (err) {
+            showToast('Камера недоступна. Введите IP вручную.', 'error', 3000);
+        }
+    }
+
+    start();
+    const stopFn = function() {
+        stopped = true;
+        if (rafId) cancelAnimationFrame(rafId);
+        if (stream) stream.getTracks().forEach((track) => track.stop());
+        if (video) video.srcObject = null;
+    };
+    activeScanner = stopFn;
+    return stopFn;
+}
+
+/* ============================================
+   СОБЫТИЯ
+   ============================================ */
+
+function bindAppEvents() {
+    document.querySelectorAll('.card[data-goto]').forEach((card) => {
+        card.addEventListener('click', () => {
+            const target = card.getAttribute('data-goto');
+            showScreen(target);
+            if (target === 'send') {
+                if (!selectedFiles.length) {
+                    showStep('send', 'send-step-select');
+                } else {
+                    showStep('send', 'send-step-scan');
+                }
+            }
+            if (target === 'receive') {
+                showStep('receive', 'recv-step-show-qr');
+                updateConnectionInfo();
+            }
+        });
+    });
+
+    document.getElementById('back-btn')?.addEventListener('click', () => {
+        if (activeScanner) { activeScanner(); activeScanner = null; }
+        showScreen('home');
+    });
+    document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
+
+    const dropZone = document.getElementById('drop-zone');
+    if (dropZone) {
+        dropZone.addEventListener('click', () => {
+            const input = document.getElementById('file-input');
+            if (input) input.click();
+        });
+        dropZone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropZone.classList.remove('dragover');
+            const input = document.getElementById('file-input');
+            if (event.dataTransfer?.files?.length && input) {
+                input.files = event.dataTransfer.files;
+                handleFileSelection({ target: input });
+            }
+        });
+    }
+    document.getElementById('file-input')?.addEventListener('change', handleFileSelection);
+
+    // Отправитель: подключение по IP вручную
+    document.getElementById('btn-connect-manual')?.addEventListener('click', () => {
+        const input = document.getElementById('manual-ip-input');
+        const raw = input?.value.trim();
+        if (!raw) {
+            showToast('Введите IP или адрес вида 192.168.0.10:45000', 'error', 3000);
+            return;
+        }
+        const parsed = parseAddressFromString(raw);
+        if (!parsed) {
+            showToast('Неверный адрес. Используйте формат IP:PORT', 'error', 3000);
+            return;
+        }
+        showToast(`Подключение к ${parsed.ip}:${parsed.port}`, 'success', 2000);
+        showStep('send', 'send-step-transfer');
+        document.getElementById('send-progress-text').textContent = `Подключение к ${parsed.ip}:${parsed.port}`;
+    });
+
+    // Отмена сканирования отправителя
+    document.getElementById('btn-send-cancel-scan')?.addEventListener('click', () => {
+        if (activeScanner) { activeScanner(); activeScanner = null; }
+        if (selectedFiles.length) {
+            showStep('send', 'send-step-select');
+        } else {
+            showStep('send', 'send-step-select');
+        }
+    });
+
+    // Отмена передачи отправителя
+    document.getElementById('btn-send-cancel-transfer')?.addEventListener('click', () => {
+        showStep('send', 'send-step-select');
+        showToast('Передача отменена', 'info', 2000);
+    });
+
+    // Получатель: сканировать ответ отправителя
+    document.getElementById('btn-scan-answer')?.addEventListener('click', () => {
+        showStep('receive', 'recv-step-scan');
+        startQRScanner(
+            document.getElementById('recv-scanner-video'),
+            document.getElementById('recv-scanner-canvas'),
+            (data) => {
+                activeScanner = null;
+                const address = parseAddressFromString(data);
+                if (!address) {
+                    showToast('QR не содержит адрес FileDrop', 'error', 3000);
+                    return;
+                }
+                showToast(`Ответ получен: ${address.ip}:${address.port}`, 'success', 2000);
+                showStep('receive', 'recv-step-transfer');
+                document.getElementById('recv-progress-text').textContent = `Соединение с ${address.ip}:${address.port}`;
+            }
+        );
+    });
+
+    // Отмена сканирования получателя
+    document.getElementById('btn-recv-cancel-scan')?.addEventListener('click', () => {
+        if (activeScanner) { activeScanner(); activeScanner = null; }
+        showStep('receive', 'recv-step-show-qr');
+    });
+
+    // Отмена передачи получателя
+    document.getElementById('btn-recv-cancel-transfer')?.addEventListener('click', () => {
+        showStep('receive', 'recv-step-show-qr');
+        showToast('Приём отменён', 'info', 2000);
+    });
+
+    // На главную
+    document.getElementById('btn-send-home')?.addEventListener('click', () => showScreen('home'));
+    document.getElementById('btn-recv-home')?.addEventListener('click', () => showScreen('home'));
+}
+
+/* ============================================
+   ИНИЦИАЛИЗАЦИЯ
+   ============================================ */
+
+async function initApp() {
+    initTheme();
+    bindAppEvents();
+    renderSelectedFiles();
+    await updateConnectionInfo();
+    showScreen('home');
+}
+
+document.addEventListener('DOMContentLoaded', initApp);
+</script>
+</body>
+</html>
