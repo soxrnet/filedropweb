@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f0f0f">
+<title>FileDrop — Передача файлов</title>
+<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script async src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<style>
+:root {
+    --bg: #0f0f0f;
+    --bg-card: #1c1c1e;
+    --bg-input: #2c2c2e;
+    --text: #ffffff;
+    --text-muted: #8e8e93;
+    --accent: #a78bfa;
+    --accent-hover: #c4b5fd;
+    --accent-soft: #1e293b;
+    --primary: #2563eb;
+    --primary-hover: #3b82f6;
+    --success: #10b981;
+    --danger: #ef4444;
+    --border: #2c2c2e;
+    --border-soft: #3a3a3c;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.5);
+}
+[data-theme="light"] {
+    --bg: #fafafa;
+    --bg-card: #ffffff;
+    --bg-input: #f2f2f7;
+    --text: #000000;
+    --text-muted: #8e8e93;
+    --accent-soft: #e8efff;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --border: #e5e5ea;
+    --border-soft: #f0f0f0;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.5;
+    min-height: 100vh; -webkit-font-smoothing: antialiased;
+    transition: background 0.25s ease, color 0.25s ease;
+}
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+.header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; gap: 12px;
+}
+.header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.header h1 {
+    font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.back-btn {
+    color: var(--text); background: none; border: none; cursor: pointer;
+    font-size: 1.5rem; line-height: 1; padding: 4px 10px 4px 0;
+    font-weight: 300; font-family: inherit;
+}
+.theme-toggle {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: none; background: var(--bg-card); color: var(--text);
+    font-size: 1.1rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: var(--shadow-sm);
+}
+.theme-toggle:active { transform: scale(0.95); }
+.main { flex: 1; padding: 8px 20px 32px; max-width: 560px; margin: 0 auto; width: 100%; }
+.screen { display: none; }
+.screen.active { display: block; }
+.step { display: none; }
+.step.active { display: block; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.section-icon { font-size: 1.6rem; flex-shrink: 0; }
+.section-title-block { flex: 1; min-width: 0; }
+.section-header h2 { font-size: 1.35rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
+.section-sub {
+    display: flex; flex-direction: column; align-items: flex-end;
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; line-height: 1.3; margin-left: auto; flex-shrink: 0;
+}
+.section-sub .wifi, .section-sub .socket { color: var(--success); }
+.card-grid { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+.card {
+    background: var(--bg-card); border-radius: var(--radius);
+    padding: 22px; text-decoration: none; color: var(--text);
+    transition: transform 0.2s; display: block; position: relative;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--border-soft); cursor: pointer;
+}
+.card:active { transform: scale(0.98); }
+.card-top { margin-bottom: 12px; }
+.card-icon { font-size: 1.8rem; display: inline-block; }
+.card h2 { font-size: 1.2rem; font-weight: 600; margin-bottom: 4px; }
+.card p { color: var(--text-muted); font-size: 0.9rem; padding-right: 32px; }
+.card-arrow {
+    position: absolute; right: 22px; top: 50%; transform: translateY(-50%);
+    font-size: 1.4rem; color: var(--accent); transition: transform 0.2s;
+}
+.card:hover .card-arrow { transform: translateY(-50%) translateX(4px); }
+.drop-zone {
+    background: var(--bg-card); border: 2px dashed var(--border-soft);
+    border-radius: var(--radius); padding: 40px 20px; text-align: center;
+    cursor: pointer; transition: border-color 0.2s, background 0.2s; margin-bottom: 16px;
+}
+.drop-zone:active, .drop-zone.dragover { border-color: var(--accent); background: var(--accent-soft); }
+.drop-zone .plus { font-size: 2rem; color: var(--accent); line-height: 1; margin-bottom: 10px; font-weight: 300; }
+.drop-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 4px; }
+.drop-hint { font-size: 0.85rem; color: var(--text-muted); }
+.drop-zone.has-files {
+    border-style: solid; border-color: var(--accent);
+    background: var(--accent-soft); text-align: left; padding: 18px;
+}
+.drop-zone .file-list {
+    display: flex; flex-direction: column; gap: 4px; margin-top: 10px;
+    font-size: 0.85rem; max-height: 180px; overflow-y: auto;
+}
+.drop-zone .file-list .file-item {
+    display: flex; justify-content: space-between; gap: 8px;
+    padding: 4px 0; border-bottom: 1px solid var(--border-soft);
+}
+.drop-zone .file-list .file-item:last-child { border-bottom: none; }
+.drop-zone .file-list .file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.drop-zone .file-list .file-size { color: var(--text-muted); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 10px; padding: 15px 24px; border: none;
+    border-radius: var(--radius-sm); font-size: 1rem; font-weight: 600;
+    cursor: pointer; transition: background 0.2s, transform 0.1s, opacity 0.2s;
+    width: 100%; text-decoration: none; font-family: inherit;
+    letter-spacing: 0.01em; line-height: 1.2;
+}
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+.btn-secondary { background: var(--bg-card); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); }
+.btn-small { padding: 10px 16px; font-size: 0.875rem; width: auto; align-self: flex-start; }
+.btn-scan { background: var(--primary); color: #fff; padding: 18px 24px; margin-bottom: 16px; }
+.btn-scan-icon {
+    background: rgba(255,255,255,0.15); width: 32px; height: 32px;
+    border-radius: 8px; display: inline-flex; align-items: center;
+    justify-content: center; font-size: 1rem;
+}
+.community-btn {
+    display: block; background: var(--bg-card); color: var(--accent);
+    text-align: center; padding: 16px; border-radius: var(--radius);
+    text-decoration: none; font-weight: 700; letter-spacing: 0.08em;
+    font-size: 0.95rem; margin-top: 24px; transition: background 0.2s, color 0.2s;
+    border: 1px solid var(--border-soft);
+}
+.community-btn:hover { background: var(--accent-soft); color: var(--accent-hover); }
+input[type="text"], textarea {
+    width: 100%; padding: 12px 16px; background: var(--bg-input);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    color: var(--text); font-size: 0.9rem;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    resize: vertical; outline: none; transition: border-color 0.2s;
+}
+input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
+.hint {
+    color: var(--text-muted); font-size: 0.9rem;
+    text-align: center; margin: 12px 0 16px; line-height: 1.4;
+}
+.qr-container {
+    display: flex; justify-content: center; align-items: center;
+    padding: 16px; background: #fff;
+    border-radius: var(--radius); margin: 8px 0 16px;
+    box-shadow: var(--shadow-sm); min-height: 320px;
+}
+.qr-container canvas {
+    max-width: 100%; width: 100%; height: auto; display: block;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+}
+.qr-placeholder { color: #666; font-size: 0.9rem; text-align: center; padding: 20px; }
+.scanner-container {
+    position: relative; width: 100%; aspect-ratio: 1 / 1;
+    background: #000; border-radius: var(--radius);
+    overflow: hidden; margin-bottom: 16px;
+}
+.scanner-container video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.scan-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.scan-box {
+    width: 68%; height: 68%; border: 3px solid var(--accent);
+    border-radius: 16px; box-shadow: 0 0 0 2000px rgba(0,0,0,0.5);
+}
+.transfer-info {
+    background: var(--bg-card); border-radius: var(--radius);
+    padding: 20px; margin-bottom: 16px;
+    border: 1px solid var(--border-soft); box-shadow: var(--shadow-sm);
+}
+#send-file-list, #recv-file-list {
+    font-size: 0.9rem; color: var(--text);
+    margin-bottom: 12px; word-break: break-word;
+}
+.progress-bar { height: 10px; background: var(--bg-input); border-radius: 5px; overflow: hidden; margin: 10px 0; }
+.progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+    width: 0%; transition: width 0.2s ease; border-radius: 5px;
+}
+.progress-text { font-size: 0.9rem; color: var(--text); font-variant-numeric: tabular-nums; }
+.speed-text { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.success-icon { font-size: 3.5rem; text-align: center; margin-bottom: 12px; }
+.step-done { text-align: center; padding-top: 40px; }
+.step-done h2 { margin-bottom: 8px; font-size: 1.4rem; }
+.step-done p { color: var(--text-muted); margin-bottom: 24px; }
+.footer-links { margin-top: 32px; display: flex; flex-direction: column; gap: 8px; text-align: center; }
+.footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+.footer-links a:hover { color: var(--accent); }
+.toast-container {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 1000; display: flex; flex-direction: column; gap: 8px;
+    width: calc(100% - 40px); max-width: 400px; pointer-events: none;
+}
+.toast {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 16px;
+    font-size: 0.9rem; text-align: center; color: var(--text);
+    animation: slideUp 0.3s ease; pointer-events: auto; box-shadow: var(--shadow-md);
+}
+.toast.success { border-color: var(--success); color: var(--success); }
+.toast.error { border-color: var(--danger); color: var(--danger); }
+.toast.info { border-color: var(--accent); }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@media (min-width: 480px) { .main { padding: 8px 24px 40px; } }
+@media (min-width: 720px) { .card-grid { flex-direction: row; } .card { flex: 1; } }
+</style>
+</head>
+<body>
+<div class="app">
+    <header class="header">
+        <div class="header-left">
+            <button id="back-btn" class="back-btn" style="display:none">←</button>
+            <h1 id="page-title">FileDrop</h1>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">
+            <span class="theme-icon">🌙</span>
+        </button>
+    </header>
+
+    <main class="main">
+
+        <div id="screen-home" class="screen active">
+            <div class="card-grid">
+                <div class="card" data-goto="send">
+                    <div class="card-top"><span class="card-icon">📤</span></div>
+                    <h2>Отправить файл</h2>
+                    <p>Выбрать файлы и передать по Wi-Fi</p>
+                    <span class="card-arrow">→</span>
+                </div>
+                <div class="card" data-goto="receive">
+                    <div class="card-top"><span class="card-icon">📥</span></div>
+                    <h2>Получить файл</h2>
+                    <p>Показать QR-код и принять</p>
+                    <span class="card-arrow">→</span>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/Nekeos/FileDrop/releases" target="_blank" rel="noopener">💻 Desktop версия</a>
+                <a href="https://www.rustore.ru/catalog/developer/ch7shq" target="_blank" rel="noopener">📱 Android в RuStore</a>
+            </div>
+            <a href="https://axkuon.ru" target="_blank" rel="noopener" class="community-btn">✨ СООБЩЕСТВО AXKUON</a>
+        </div>
+
+        <!-- ОТПРАВИТЕЛЬ: файл → сканирование QR получателя → показ ответа → передача -->
+        <div id="screen-send" class="screen">
+            <div id="send-step-select" class="step active">
+                <div class="section-header">
+                    <span class="section-icon">📤</span>
+                    <div class="section-title-block">
+                        <h2>Отправить файл</h2>
+                        <div class="section-sub">
+                            <span class="wifi">WI-FI</span>
+                            <span class="socket">P2P</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="drop-zone" id="drop-zone">
+                    <input type="file" id="file-input" multiple hidden>
+                    <div class="plus">+</div>
+                    <div class="drop-title">Выбрать файл</div>
+                    <div class="drop-hint">Перетащите или выберите из хранилища</div>
+                </div>
+            </div>
+
+            <div id="send-step-scan" class="step">
+                <div class="section-header">
+                    <span class="section-icon">📷</span>
+                    <div class="section-title-block">
+                        <h2>Сканирование получателя</h2>
+                        <div class="section-sub">
+                            <span class="wifi">ОТПРАВИТЕЛЬ</span>
+                            <span class="socket">ПОИСК</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="hint">Наведите камеру на QR-код получателя</p>
+                <div class="scanner-container">
+                    <video id="send-scanner-video" playsinline muted></video>
+                    <canvas id="send-scanner-canvas" hidden></canvas>
+                    <div class="scan-overlay"><div class="scan-box"></div></div>
+                </div>
+                <button class="btn btn-secondary" id="btn-send-cancel-scan">Отмена</button>
+            </div>
+
+            <div id="send-step-show-qr" class="step">
+                <div class="section-header">
+                    <span class="section-icon">📡</span>
+                    <div class="section-title-block">
+                        <h2>Ответ получателю</h2>
+                        <div class="section-sub">
+                            <span class="wifi">ОТПРАВИТЕЛЬ</span>
+                            <span class="socket">ОТВЕТ</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="hint">Получатель должен отсканировать этот QR-код</p>
+                <div class="qr-container" id="answer-qr-wrap">
+                    <canvas id="answer-qr-canvas"></canvas>
+                </div>
+            </div>
+
+            <div id="send-step-transfer" class="step">
+                <div class="transfer-info">
+                    <p id="send-file-list"></p>
+                    <div class="progress-bar"><div class="progress-fill" id="send-progress-fill"></div></div>
+                    <p class="progress-text" id="send-progress-text">Ожидание подключения...</p>
+                    <p class="speed-text" id="send-speed-text"></p>
+                </div>
+                <button class="btn btn-secondary" id="btn-send-cancel-transfer">Отмена передачи</button>
+            </div>
+
+            <div id="send-step-done" class="step step-done">
+                <div class="success-icon">✅</div>
+                <h2>Файлы отправлены!</h2>
+                <p id="sent-summary"></p>
+                <button class="btn btn-primary" id="btn-send-home">На главную</button>
+            </div>
+        </div>
+
+        <!-- ПОЛУЧАТЕЛЬ: показ QR → сканирование ответа → приём -->
+        <div id="screen-receive" class="screen">
+            <div id="recv-step-show-qr" class="step active">
+                <div class="section-header">
+                    <span class="section-icon">📥</span>
+                    <div class="section-title-block">
+                        <h2>Получить файл</h2>
+                        <div class="section-sub">
+                            <span class="wifi">ПОЛУЧАТЕЛЬ</span>
+                            <span class="socket">ГОТОВ</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="hint">Покажите этот QR-код отправителю</p>
+                <div class="qr-container" id="offer-qr-wrap">
+                    <canvas id="offer-qr-canvas"></canvas>
+                </div>
+                <button class="btn btn-primary" id="btn-scan-answer">📷 Сканировать ответ отправителя</button>
+            </div>
+
+            <div id="recv-step-scan" class="step">
+                <div class="section-header">
+                    <span class="section-icon">📷</span>
+                    <div class="section-title-block">
+                        <h2>Сканирование ответа</h2>
+                        <div class="section-sub">
+                            <span class="wifi">ПОЛУЧАТЕЛЬ</span>
+                            <span class="socket">ПОИСК</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="hint">Наведите камеру на QR-код отправителя</p>
+                <div class="scanner-container">
+                    <video id="recv-scanner-video" playsinline muted></video>
+                    <canvas id="recv-scanner-canvas" hidden></canvas>
+                    <div class="scan-overlay"><div class="scan-box"></div></div>
+                </div>
+                <button class="btn btn-secondary" id="btn-recv-cancel-scan">Отмена</button>
+            </div>
+
+            <div id="recv-step-transfer" class="step">
+                <div class="transfer-info">
+                    <p id="recv-file-list"></p>
+                    <div class="progress-bar"><div class="progress-fill" id="recv-progress-fill"></div></div>
+                    <p class="progress-text" id="recv-progress-text">Ожидание файлов...</p>
+                    <p class="speed-text" id="recv-speed-text"></p>
+                </div>
+                <button class="btn btn-secondary" id="btn-recv-cancel-transfer">Отмена передачи</button>
+            </div>
+
+            <div id="recv-step-done" class="step step-done">
+                <div class="success-icon">✅</div>
+                <h2>Файлы получены!</h2>
+                <p id="received-summary"></p>
+                <button class="btn btn-primary" id="btn-recv-home">На главную</button>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script>
+/* ============================================
+   UI утилиты
+   ============================================ */
+
+function initTheme() {
+    const saved = localStorage.getItem('filedrop-theme');
+    const theme = saved || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    updateThemeIcon(theme);
+    updateThemeColorMeta(theme);
+}
+function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('filedrop-theme', next);
+    updateThemeIcon(next);
+    updateThemeColorMeta(next);
+}
+function updateThemeIcon(theme) {
+    document.querySelectorAll('#theme-toggle .theme-icon').forEach(el => {
+        el.textContent = theme === 'dark' ? '🌙' : '☀️';
+    });
+}
+function updateThemeColorMeta(theme) {
+    const color = theme === 'dark' ? '#0f0f0f' : '#fafafa';
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) { meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.appendChild(meta); }
+    meta.content = color;
+}
+function showToast(message, type = 'info', duration = 3000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+function showStep(screenPrefix, stepId) {
+    const screen = document.getElementById('screen-' + screenPrefix);
+    if (!screen) return;
+    screen.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById(stepId);
+    if (target) target.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function formatSize(bytes) {
+    if (!bytes || bytes === 0) return '0 Б';
+    const k = 1024;
+    const sizes = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+function formatSpeed(bps) {
+    if (!bps || bps < 1) return '';
+    if (bps < 1024) return `${bps.toFixed(0)} Б/с`;
+    if (bps < 1024 * 1024) return `${(bps / 1024).toFixed(1)} КБ/с`;
+    return `${(bps / (1024 * 1024)).toFixed(1)} МБ/с`;
+}
+function escapeHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+const SCREEN_TITLES = { home: 'FileDrop', send: 'Отправить файл', receive: 'Получить файл' };
+function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById('screen-' + name);
+    if (target) target.classList.add('active');
+    document.getElementById('page-title').textContent = SCREEN_TITLES[name] || 'FileDrop';
+    document.getElementById('back-btn').style.display = (name === 'home') ? 'none' : 'inline-block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================
+   Генератор QR (qrcode-generator, MIT)
+   ============================================ */
+(function(global){
+    'use strict';
+
+    var QRMath = (function(){
+        var EXP_TABLE = new Array(256);
+        var LOG_TABLE = new Array(256);
+        for (var i = 0; i < 8; i++) EXP_TABLE[i] = 1 << i;
+        for (var i = 8; i < 256; i++) EXP_TABLE[i] = EXP_TABLE[i - 4] ^ EXP_TABLE[i - 5] ^ EXP_TABLE[i - 6] ^ EXP_TABLE[i - 8];
+        for (var i = 0; i < 255; i++) LOG_TABLE[EXP_TABLE[i]] = i;
+        return {
+            glog: function(n){ if (n < 1) throw new Error('glog'); return LOG_TABLE[n]; },
+            gexp: function(n){ while (n < 0) n += 255; while (n >= 256) n -= 255; return EXP_TABLE[n]; }
+        };
+    })();
+
+    function QRPolynomial(num, shift){
+        var offset = 0;
+        while (offset < num.length && num[offset] === 0) offset++;
+        this.num = new Array(num.length - offset + shift);
+        for (var i = 0; i < num.length - offset; i++) this.num[i] = num[i + offset];
+    }
+    QRPolynomial.prototype.get = function(i){ return this.num[i]; };
+    QRPolynomial.prototype.getLength = function(){ return this.num.length; };
+    QRPolynomial.prototype.multiply = function(e){
+        var num = new Array(this.getLength() + e.getLength() - 1);
+        for (var i = 0; i < this.getLength(); i++)
+            for (var j = 0; j < e.getLength(); j++)
+                num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i)) + QRMath.glog(e.get(j)));
+        return new QRPolynomial(num, 0);
+    };
+    QRPolynomial.prototype.mod = function(e){
+        if (this.getLength() - e.getLength() < 0) return this;
+        var ratio = QRMath.glog(this.get(0)) - QRMath.glog(e.get(0));
+        var num = this.num.slice();
+        for (var i = 0; i < e.getLength(); i++) num[i] ^= QRMath.gexp(QRMath.glog(e.get(i)) + ratio);
+        return new QRPolynomial(num, 0).mod(e);
+    };
+
+    var RS_BLOCK_TABLE = [
+        [1,26,19],[1,26,16],[1,26,13],[1,26,9],
+        [1,44,34],[1,44,28],[1,44,22],[1,44,16],
+        [1,70,55],[1,70,44],[2,35,17],[2,35,13],
+        [1,100,80],[2,50,32],[2,50,24],[4,25,9],
+        [1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],
+        [2,86,68],[4,43,27],[4,43,19],[4,43,15],
+        [2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],
+        [2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],
+        [2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],
+        [2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],
+        [4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],
+        [2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],
+        [4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],
+        [3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],
+        [5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],
+        [5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],
+        [1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],
+        [5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],
+        [3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],
+        [3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],
+        [4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],
+        [2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],
+        [4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],
+        [6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],
+        [8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],
+        [10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],
+        [8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],
+        [3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],
+        [7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],
+        [5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],
+        [13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],
+        [17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],
+        [17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],
+        [13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],
+        [12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],
+        [6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],
+        [17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],
+        [4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],
+        [20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],
+        [19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]
+    ];
+
+    function getRsBlockTable(typeNumber, ecLevel){
+        switch (ecLevel) {
+            case 1: return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+            case 0: return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+            case 3: return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+            case 2: return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+        }
+    }
+    function getRSBlocks(typeNumber, ecLevel){
+        var rsBlock = getRsBlockTable(typeNumber, ecLevel);
+        if (!rsBlock) throw new Error('bad rs block');
+        var list = [];
+        for (var i = 0; i < rsBlock.length; i += 3) {
+            for (var j = 0; j < rsBlock[i]; j++)
+                list.push({ totalCount: rsBlock[i + 1], dataCount: rsBlock[i + 2] });
+        }
+        return list;
+    }
+
+    function QRBitBuffer(){ this.buffer = []; this.length = 0; }
+    QRBitBuffer.prototype.put = function(num, length){
+        for (var i = 0; i < length; i++) this.putBit(((num >>> (length - i - 1)) & 1) === 1);
+    };
+    QRBitBuffer.prototype.getLengthInBits = function(){ return this.length; };
+    QRBitBuffer.prototype.putBit = function(bit){
+        var bufIndex = Math.floor(this.length / 8);
+        if (this.buffer.length <= bufIndex) this.buffer.push(0);
+        if (bit) this.buffer[bufIndex] |= (0x80 >>> (this.length % 8));
+        this.length++;
+    };
+
+    function QR8bitByte(data){
+        this.mode = 4;
+        this.data = data;
+        this.parsedData = [];
+        for (var i = 0; i < data.length; i++) {
+            var code = data.charCodeAt(i);
+            var ba = [];
+            if (code > 0x10000) {
+                ba[0] = 0xF0 | ((code & 0x1C0000) >>> 18);
+                ba[1] = 0x80 | ((code & 0x3F000) >>> 12);
+                ba[2] = 0x80 | ((code & 0xFC0) >>> 6);
+                ba[3] = 0x80 | (code & 0x3F);
+            } else if (code > 0x800) {
+                ba[0] = 0xE0 | ((code & 0xF000) >>> 12);
+                ba[1] = 0x80 | ((code & 0xFC0) >>> 6);
+                ba[2] = 0x80 | (code & 0x3F);
+            } else if (code > 0x80) {
+                ba[0] = 0xC0 | ((code & 0x7C0) >>> 6);
+                ba[1] = 0x80 | (code & 0x3F);
+            } else {
+                ba[0] = code;
+            }
+            this.parsedData.push(ba);
+        }
+        this.parsedData = Array.prototype.concat.apply([], this.parsedData);
+        if (this.parsedData.length !== data.length) {
+            this.parsedData.unshift(191); this.parsedData.unshift(187); this.parsedData.unshift(239);
+        }
+    }
+    QR8bitByte.prototype.getLength = function(){ return this.parsedData.length; };
+    QR8bitByte.prototype.write = function(buffer){
+        for (var i = 0; i < this.parsedData.length; i++) buffer.put(this.parsedData[i], 8);
+    };
+
+    var PATTERN_POSITION_TABLE = [
+        [],[6,18],[6,22],[6,26],[6,30],[6,34],
+        [6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],
+        [6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],
+        [6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],
+        [6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],
+        [6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],
+        [6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],
+        [6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],
+        [6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],
+        [6,26,54,82,110,138,166],[6,30,58,86,114,142,170]
+    ];
+
+    var G15 = (1<<10)|(1<<8)|(1<<5)|(1<<4)|(1<<2)|(1<<1)|1;
+    var G18 = (1<<12)|(1<<11)|(1<<10)|(1<<9)|(1<<8)|(1<<5)|(1<<2)|1;
+    var G15_MASK = (1<<14)|(1<<12)|(1<<10)|(1<<4)|(1<<1);
+
+    function getBCHDigit(data){ var d = 0; while (data !== 0) { d++; data >>>= 1; } return d; }
+    function getBCHTypeInfo(data){
+        var d = data << 10;
+        while (getBCHDigit(d) - getBCHDigit(G15) >= 0) d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15)));
+        return ((data << 10) | d) ^ G15_MASK;
+    }
+    function getBCHTypeNumber(data){
+        var d = data << 12;
+        while (getBCHDigit(d) - getBCHDigit(G18) >= 0) d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18)));
+        return (data << 12) | d;
+    }
+    function getMask(mp, i, j){
+        switch (mp) {
+            case 0: return (i + j) % 2 === 0;
+            case 1: return i % 2 === 0;
+            case 2: return j % 3 === 0;
+            case 3: return (i + j) % 3 === 0;
+            case 4: return (Math.floor(i/2) + Math.floor(j/3)) % 2 === 0;
+            case 5: return (i*j) % 2 + (i*j) % 3 === 0;
+            case 6: return ((i*j) % 2 + (i*j) % 3) % 2 === 0;
+            case 7: return ((i*j) % 3 + (i+j) % 2) % 2 === 0;
+        }
+    }
+    function getErrorCorrectPolynomial(len){
+        var a = new QRPolynomial([1], 0);
+        for (var i = 0; i < len; i++) a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0));
+        return a;
+    }
+    function getLengthInBits(mode, type){
+        if (1 <= type && type < 10) return 8;
+        if (type < 41) return 16;
+        throw new Error('bad length');
+    }
+    function getLostPoint(qr){
+        var mc = qr.getModuleCount(), lp = 0;
+        for (var row = 0; row < mc; row++) {
+            for (var col = 0; col < mc; col++) {
+                var sameCount = 0, dark = qr.isDark(row, col);
+                for (var r = -1; r <= 1; r++) {
+                    if (row + r < 0 || mc <= row + r) continue;
+                    for (var c = -1; c <= 1; c++) {
+                        if (col + c < 0 || mc <= col + c) continue;
+                        if (r === 0 && c === 0) continue;
+                        if (dark === qr.isDark(row + r, col + c)) sameCount++;
+                    }
+                }
+                if (sameCount > 5) lp += (3 + sameCount - 5);
+            }
+        }
+        for (var row = 0; row < mc - 1; row++) {
+            for (var col = 0; col < mc - 1; col++) {
+                var count = 0;
+                if (qr.isDark(row, col)) count++;
+                if (qr.isDark(row+1, col)) count++;
+                if (qr.isDark(row, col+1)) count++;
+                if (qr.isDark(row+1, col+1)) count++;
+                if (count === 0 || count === 4) lp += 3;
+            }
+        }
+        for (var row = 0; row < mc; row++) {
+            for (var col = 0; col < mc - 6; col++) {
+                if (qr.isDark(row, col) && !qr.isDark(row, col+1) && qr.isDark(row, col+2) && qr.isDark(row, col+3) && qr.isDark(row, col+4) && !qr.isDark(row, col+5) && qr.isDark(row, col+6)) lp += 40;
+            }
+        }
+        for (var col = 0; col < mc; col++) {
+            for (var row = 0; row < mc - 6; row++) {
+                if (qr.isDark(row, col) && !qr.isDark(row+1, col) && qr.isDark(row+2, col) && qr.isDark(row+3, col) && qr.isDark(row+4, col) && !qr.isDark(row+5, col) && qr.isDark(row+6, col)) lp += 40;
+            }
+        }
+        var darkCount = 0;
+        for (var col = 0; col < mc; col++) {
+            for (var row = 0; row < mc; row++) {
+                if (qr.isDark(row, col)) darkCount++;
+            }
+        }
+        lp += Math.abs(100 * darkCount / mc / mc - 50) / 5 * 10;
+        return lp;
+    }
+
+    function QRCodeModel(typeNumber, ecLevel){
+        this.typeNumber = typeNumber;
+        this.errorCorrectLevel = ecLevel;
+        this.modules = null;
+        this.moduleCount = 0;
+        this.dataCache = null;
+        this.dataList = [];
+    }
+    QRCodeModel.prototype = {
+        addData: function(data){ this.dataList.push(new QR8bitByte(data)); this.dataCache = null; },
+        isDark: function(row, col){ return this.modules[row][col]; },
+        getModuleCount: function(){ return this.moduleCount; },
+        make: function(){ this.makeImpl(false, this.getBestMaskPattern()); },
+        makeImpl: function(test, mp){
+            this.moduleCount = this.typeNumber * 4 + 17;
+            this.modules = new Array(this.moduleCount);
+            for (var row = 0; row < this.moduleCount; row++) {
+                this.modules[row] = new Array(this.moduleCount);
+                for (var col = 0; col < this.moduleCount; col++) this.modules[row][col] = null;
+            }
+            this.setupPositionProbePattern(0, 0);
+            this.setupPositionProbePattern(this.moduleCount - 7, 0);
+            this.setupPositionProbePattern(0, this.moduleCount - 7);
+            this.setupPositionAdjustPattern();
+            this.setupTimingPattern();
+            this.setupTypeInfo(test, mp);
+            if (this.typeNumber >= 7) this.setupTypeNumber(test);
+            if (this.dataCache == null) this.dataCache = QRCodeModel.createData(this.typeNumber, this.errorCorrectLevel, this.dataList);
+            this.mapData(this.dataCache, mp);
+        },
+        setupPositionProbePattern: function(row, col){
+            for (var r = -1; r <= 7; r++) {
+                if (row + r <= -1 || this.moduleCount <= row + r) continue;
+                for (var c = -1; c <= 7; c++) {
+                    if (col + c <= -1 || this.moduleCount <= col + c) continue;
+                    if ((0 <= r && r <= 6 && (c === 0 || c === 6)) || (0 <= c && c <= 6 && (r === 0 || r === 6)) || (2 <= r && r <= 4 && 2 <= c && c <= 4)) {
+                        this.modules[row + r][col + c] = true;
+                    } else {
+                        this.modules[row + r][col + c] = false;
+                    }
+                }
+            }
+        },
+        getBestMaskPattern: function(){
+            var minLp = 0, pattern = 0;
+            for (var i = 0; i < 8; i++) {
+                this.makeImpl(true, i);
+                var lp = getLostPoint(this);
+                if (i === 0 || minLp > lp) { minLp = lp; pattern = i; }
+            }
+            return pattern;
+        },
+        setupTimingPattern: function(){
+            for (var r = 8; r < this.moduleCount - 8; r++) {
+                if (this.modules[r][6] != null) continue;
+                this.modules[r][6] = (r % 2 === 0);
+            }
+            for (var c = 8; c < this.moduleCount - 8; c++) {
+                if (this.modules[6][c] != null) continue;
+                this.modules[6][c] = (c % 2 === 0);
+            }
+        },
+        setupPositionAdjustPattern: function(){
+            var pos = PATTERN_POSITION_TABLE[this.typeNumber - 1];
+            for (var i = 0; i < pos.length; i++) {
+                for (var j = 0; j < pos.length; j++) {
+                    var row = pos[i], col = pos[j];
+                    if (this.modules[row][col] != null) continue;
+                    for (var r = -2; r <= 2; r++) {
+                        for (var c = -2; c <= 2; c++) {
+                            if (r === -2 || r === 2 || c === -2 || c === 2 || (r === 0 && c === 0)) {
+                                this.modules[row + r][col + c] = true;
+                            } else {
+                                this.modules[row + r][col + c] = false;
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        setupTypeNumber: function(test){
+            var bits = getBCHTypeNumber(this.typeNumber);
+            for (var i = 0; i < 18; i++) {
+                var mod = (!test && ((bits >> i) & 1) === 1);
+                this.modules[Math.floor(i/3)][i%3 + this.moduleCount - 8 - 3] = mod;
+            }
+            for (var i = 0; i < 18; i++) {
+                var mod = (!test && ((bits >> i) & 1) === 1);
+                this.modules[i%3 + this.moduleCount - 8 - 3][Math.floor(i/3)] = mod;
+            }
+        },
+        setupTypeInfo: function(test, mp){
+            var data = (this.errorCorrectLevel << 3) | mp;
+            var bits = getBCHTypeInfo(data);
+            for (var i = 0; i < 15; i++) {
+                var mod = (!test && ((bits >> i) & 1) === 1);
+                if (i < 6) this.modules[i][8] = mod;
+                else if (i < 8) this.modules[i+1][8] = mod;
+                else this.modules[this.moduleCount - 15 + i][8] = mod;
+            }
+            for (var i = 0; i < 15; i++) {
+                var mod = (!test && ((bits >> i) & 1) === 1);
+                if (i < 8) this.modules[8][this.moduleCount - i - 1] = mod;
+                else if (i < 9) this.modules[8][15 - i - 1 + 1] = mod;
+                else this.modules[8][15 - i - 1] = mod;
+            }
+            this.modules[this.moduleCount - 8][8] = (!test);
+        },
+        mapData: function(data, mp){
+            var inc = -1, row = this.moduleCount - 1, bitIndex = 7, byteIndex = 0;
+            for (var col = this.moduleCount - 1; col > 0; col -= 2) {
+                if (col === 6) col--;
+                while (true) {
+                    for (var c = 0; c < 2; c++) {
+                        if (this.modules[row][col - c] == null) {
+                            var dark = false;
+                            if (byteIndex < data.length) dark = (((data[byteIndex] >>> bitIndex) & 1) === 1);
+                            if (getMask(mp, row, col - c)) dark = !dark;
+                            this.modules[row][col - c] = dark;
+                            bitIndex--;
+                            if (bitIndex === -1) { byteIndex++; bitIndex = 7; }
+                        }
+                    }
+                    row += inc;
+                    if (row < 0 || this.moduleCount <= row) { row -= inc; inc = -inc; break; }
+                }
+            }
+        }
+    };
+    QRCodeModel.PAD0 = 0xEC;
+    QRCodeModel.PAD1 = 0x11;
+    QRCodeModel.createData = function(typeNumber, ecLevel, dataList){
+        var rsBlocks = getRSBlocks(typeNumber, ecLevel);
+        var buffer = new QRBitBuffer();
+        for (var i = 0; i < dataList.length; i++) {
+            var data = dataList[i];
+            buffer.put(data.mode, 4);
+            buffer.put(data.getLength(), getLengthInBits(data.mode, typeNumber));
+            data.write(buffer);
+        }
+        var totalDataCount = 0;
+        for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
+        if (buffer.getLengthInBits() > totalDataCount * 8) throw new Error('code length overflow');
+        if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) buffer.put(0, 4);
+        while (buffer.getLengthInBits() % 8 !== 0) buffer.putBit(false);
+        while (true) {
+            if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+            buffer.put(QRCodeModel.PAD0, 8);
+            if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+            buffer.put(QRCodeModel.PAD1, 8);
+        }
+        return QRCodeModel.createBytes(buffer, rsBlocks);
+    };
+    QRCodeModel.createBytes = function(buffer, rsBlocks){
+        var offset = 0, maxDcCount = 0, maxEcCount = 0;
+        var dcdata = new Array(rsBlocks.length);
+        var ecdata = new Array(rsBlocks.length);
+        for (var r = 0; r < rsBlocks.length; r++) {
+            var dcCount = rsBlocks[r].dataCount;
+            var ecCount = rsBlocks[r].totalCount - dcCount;
+            maxDcCount = Math.max(maxDcCount, dcCount);
+            maxEcCount = Math.max(maxEcCount, ecCount);
+            dcdata[r] = new Array(dcCount);
+            for (var i = 0; i < dcdata[r].length; i++) dcdata[r][i] = 0xff & buffer.buffer[i + offset];
+            offset += dcCount;
+            var rsPoly = getErrorCorrectPolynomial(ecCount);
+            var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
+            var modPoly = rawPoly.mod(rsPoly);
+            ecdata[r] = new Array(rsPoly.getLength() - 1);
+            for (var i = 0; i < ecdata[r].length; i++) {
+                var modIndex = i + modPoly.getLength() - ecdata[r].length;
+                ecdata[r][i] = (modIndex >= 0) ? modPoly.get(modIndex) : 0;
+            }
+        }
+        var totalCodeCount = 0;
+        for (var i = 0; i < rsBlocks.length; i++) totalCodeCount += rsBlocks[i].totalCount;
+        var data = new Array(totalCodeCount), index = 0;
+        for (var i = 0; i < maxDcCount; i++) {
+            for (var r = 0; r < rsBlocks.length; r++) {
+                if (i < dcdata[r].length) data[index++] = dcdata[r][i];
+            }
+        }
+        for (var i = 0; i < maxEcCount; i++) {
+            for (var r = 0; r < rsBlocks.length; r++) {
+                if (i < ecdata[r].length) data[index++] = ecdata[r][i];
+            }
+        }
+        return data;
+    };
+
+    var EC_LEVEL = { L: 1, M: 0, Q: 3, H: 2 };
+
+    function QRCodeGen(typeNumber, ecLevel){
+        this._qr = new QRCodeModel(typeNumber, EC_LEVEL[ecLevel]);
+    }
+    QRCodeGen.prototype.addData = function(data){ this._qr.addData(data); };
+    QRCodeGen.prototype.make = function(){ this._qr.make(); };
+    QRCodeGen.prototype.getModuleCount = function(){ return this._qr.getModuleCount(); };
+    QRCodeGen.prototype.isDark = function(row, col){ return this._qr.isDark(row, col); };
+
+    function getTypeNumber(text, ecLevel){
+        for (var t = 1; t <= 40; t++) {
+            try {
+                var qr = new QRCodeGen(t, ecLevel);
+                qr.addData(text);
+                qr.make();
+                return t;
+            } catch (e) {}
+        }
+        throw new Error('Данные слишком длинные для QR');
+    }
+
+    global.MiniQR = {
+        render: function(canvas, text, opts){
+            opts = opts || {};
+            var ecLevel = opts.errorCorrectLevel || 'L';
+            var size = opts.size || 600;
+            var margin = opts.margin != null ? opts.margin : 2;
+
+            var typeNumber = getTypeNumber(text, ecLevel);
+            var qr = new QRCodeGen(typeNumber, ecLevel);
+            qr.addData(text);
+            qr.make();
+
+            var count = qr.getModuleCount();
+            var totalModules = count + margin * 2;
+            var cellSize = Math.floor(size / totalModules);
+            if (cellSize < 1) cellSize = 1;
+            var realSize = cellSize * totalModules;
+
+            canvas.width = realSize;
+            canvas.height = realSize;
+            canvas.style.width = size + 'px';
+            canvas.style.height = size + 'px';
+
+            var ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, realSize, realSize);
+            ctx.fillStyle = '#000000';
+            for (var r = 0; r < count; r++) {
+                for (var c = 0; c < count; c++) {
+                    if (qr.isDark(r, c)) {
+                        ctx.fillRect((c + margin) * cellSize, (r + margin) * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+            return { typeNumber: typeNumber, modules: count };
+        }
+    };
+})(window);
+
+async function drawQR(canvas, text, wrapEl) {
+    if (!canvas) return false;
+    try {
+        const result = MiniQR.render(canvas, text, {
+            errorCorrectLevel: 'L',
+            size: 600,
+            margin: 2
+        });
+        console.log('[QR] Сгенерирован: тип', result.typeNumber, '· модулей', result.modules, '· длина', text.length, 'байт');
+        return true;
+    } catch (err) {
+        console.error('[QR] Ошибка:', err);
+        if (wrapEl) {
+            wrapEl.innerHTML = '<div class="qr-placeholder">Не удалось сгенерировать QR.<br>' + escapeHtml(err.message || '') + '</div>';
+        }
+        showToast('Ошибка QR: ' + (err.message || ''), 'error', 5000);
+        return false;
+    }
+}
+
+function startQRScanner(video, canvas, onResult) {
+    if (typeof jsQR === 'undefined') {
+        showToast('Сканер QR не загружен. Проверьте интернет.', 'error', 5000);
+        return () => {};
+    }
+    let stream = null;
+    let rafId = null;
+    let stopped = false;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+    async function start() {
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: { facing... (осталось: 27 кб)
