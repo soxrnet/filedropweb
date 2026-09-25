@@ -1093,7 +1093,6 @@ function unpackSDP(o) {
     'a=setup:' + o.s,
     'a=mid:0',
     'a=sctp-port:5000'
-    // 'a=max-message-size:...' УБРАНО — Safari ломается на этой строке
   ];
   for (const c of (o.c || [])) {
     lines.splice(lines.length - 1, 0, 'a=candidate:candidate:' + c + ' generation 0');
@@ -1143,9 +1142,9 @@ async function applyAnswer(pc, answerJson) {
 }
 
 /* ============ Передача файлов ============ */
-const CHUNK_SIZE = 16 * 1024;        // 16 КБ — безопасно для Safari
-const BUFFER_HIGH = 4 * 1024 * 1024; // 4 МБ — порог паузы
-const BUFFER_LOW = 1 * 1024 * 1024;  // 1 МБ — порог возобновления
+const CHUNK_SIZE = 16 * 1024;
+const BUFFER_HIGH = 4 * 1024 * 1024;
+const BUFFER_LOW = 1 * 1024 * 1024;
 
 async function sendFiles(dc, files, ui = {}) {
   const totalSize = files.reduce((s, f) => s + f.size, 0);
@@ -1160,7 +1159,6 @@ async function sendFiles(dc, files, ui = {}) {
   dc.addEventListener('close', onClose);
   dc.addEventListener('error', onError);
 
-  // 🔧 Safari: bufferedamountlow может не сработать — добавляем таймаут
   const waitDrain = () => new Promise(resolve => {
     if (dc.bufferedAmount < BUFFER_HIGH) return resolve();
     let done = false;
@@ -1175,12 +1173,10 @@ async function sendFiles(dc, files, ui = {}) {
     };
     dc.bufferedAmountLowThreshold = BUFFER_LOW;
     dc.addEventListener('bufferedamountlow', check);
-    // Страховка: не ждём дольше 2 секунд
     setTimeout(finish, 2000);
   });
 
   try {
-    // 🔧 Safari: повторно выставляем binaryType перед отправкой
     dc.binaryType = 'arraybuffer';
 
     dc.send(JSON.stringify({
@@ -1197,7 +1193,6 @@ async function sendFiles(dc, files, ui = {}) {
       while (offset < file.size) {
         if (aborted) throw new Error('Соединение закрыто');
 
-        // 🔧 Safari: используем Uint8Array вместо ArrayBuffer
         const slice = file.slice(offset, offset + CHUNK_SIZE);
         const ab = await slice.arrayBuffer();
         const bytes = new Uint8Array(ab);
@@ -1205,7 +1200,6 @@ async function sendFiles(dc, files, ui = {}) {
         try {
           dc.send(bytes);
         } catch (sendErr) {
-          // Safari иногда кидает ошибку при переполнении — ждём слив буфера и пробуем ещё раз
           console.warn('[Send] send() ошибка, ждём слив:', sendErr);
           await waitDrain();
           if (aborted) throw new Error('Соединение закрыто');
@@ -1224,7 +1218,6 @@ async function sendFiles(dc, files, ui = {}) {
 
         if (dc.bufferedAmount > BUFFER_HIGH) await waitDrain();
 
-        // 🔧 Safari: даём браузеру "продышаться"
         if ((offset / CHUNK_SIZE) % 32 === 0) {
           await new Promise(r => setTimeout(r, 0));
         }
@@ -1281,7 +1274,6 @@ function receiveFiles(dc, ui = {}) {
       return;
     }
 
-    // 🔧 Safari может прислать Blob вместо ArrayBuffer
     if (data instanceof ArrayBuffer && currentFile) {
       currentFile.chunks.push(data);
       receivedTotal += data.byteLength;
@@ -1305,47 +1297,62 @@ function receiveFiles(dc, ui = {}) {
   });
 }
 
-/* ============ Drop zone ============ */
+/* ============ Drop zone (ИСПРАВЛЕНО) ============ */
 function initDropZone(opts = {}) {
   const dropZone = document.getElementById('drop-zone');
   if (!dropZone) return;
+  // 🔧 Защита от повторной инициализации — иначе накапливаются обработчики
+  if (dropZone.dataset.inited === '1') return;
+  dropZone.dataset.inited = '1';
 
   const renderFiles = (files) => {
+    const plus = dropZone.querySelector('.plus');
+    const title = dropZone.querySelector('.drop-title');
+    const hint = dropZone.querySelector('.drop-hint');
+    let list = dropZone.querySelector('.file-list');
+
     if (!files || !files.length) {
       dropZone.classList.remove('has-files');
-      dropZone.innerHTML = `
-        <input type="file" id="file-input" multiple hidden>
-        <div class="plus">+</div>
-        <div class="drop-title">Выбрать файл</div>
-        <div class="drop-hint">Перетащите или выберите из хранилища</div>`;
+      if (plus) plus.style.display = '';
+      if (title) title.textContent = 'Выбрать файл';
+      if (hint) hint.textContent = 'Перетащите или выберите из хранилища';
+      if (list) list.remove();
       return;
     }
+
     dropZone.classList.add('has-files');
+    if (plus) plus.style.display = 'none';
+
     const total = Array.from(files).reduce((s, f) => s + f.size, 0);
-    const items = Array.from(files).map(f => `
+    if (title) title.textContent = `Выбрано файлов: ${files.length}`;
+    if (hint) hint.textContent = `Общий размер: ${formatSize(total)}`;
+
+    if (!list) {
+      list = document.createElement('div');
+      list.className = 'file-list';
+      dropZone.appendChild(list);
+    }
+    list.innerHTML = Array.from(files).map(f => `
       <div class="file-item">
         <span class="file-name">${escapeHtml(f.name)}</span>
         <span class="file-size">${formatSize(f.size)}</span>
       </div>`).join('');
-    dropZone.innerHTML = `
-      <input type="file" id="file-input" multiple hidden>
-      <div class="drop-title">Выбрано файлов: ${files.length}</div>
-      <div class="drop-hint">Общий размер: ${formatSize(total)}</div>
-      <div class="file-list">${items}</div>`;
   };
 
   const currentInput = () => document.getElementById('file-input');
 
   dropZone.addEventListener('click', (e) => {
     if (e.target.closest('button, a')) return;
+    if (e.target.closest('.file-list')) return;
     const inp = currentInput();
     if (inp) inp.click();
   });
 
   dropZone.addEventListener('change', (e) => {
     if (e.target && e.target.id === 'file-input') {
-      renderFiles(e.target.files);
-      if (typeof opts.onFiles === 'function') opts.onFiles(Array.from(e.target.files));
+      const files = Array.from(e.target.files || []);
+      renderFiles(files);
+      if (files.length && typeof opts.onFiles === 'function') opts.onFiles(files);
     }
   });
 
@@ -1379,6 +1386,8 @@ const sendState = { files: [], pc: null, dc: null, stopScanner: null, transferSt
 function initSender() {
   initDropZone({
     onFiles: (selected) => {
+      // 🔧 Защита: если уже сканируем или передача начата — не дёргаем повторно
+      if (sendState.stopScanner || sendState.transferStarted) return;
       sendState.files = selected;
       if (sendState.files.length) startScanningReceiver();
     }
@@ -1462,10 +1471,8 @@ async function beginTransfer() {
   const text = document.getElementById('send-progress-text');
   const speed = document.getElementById('send-speed-text');
 
-  // 🔧 Safari: повторно выставляем binaryType перед стартом
   try { sendState.dc.binaryType = 'arraybuffer'; } catch {}
 
-  // Если канал уже открыт — стартуем сразу, иначе ждём open с таймаутом
   if (sendState.dc.readyState !== 'open') {
     await new Promise((resolve, reject) => {
       if (sendState.dc.readyState === 'open') return resolve();
@@ -1518,20 +1525,20 @@ function resetSend() {
   sendState.dc = null;
   sendState.pc = null;
 
+  // 🔧 Сбрасываем ТОЛЬКО вид drop-зоны, без пересоздания input и без повторного initDropZone
   const dz = document.getElementById('drop-zone');
   if (dz) {
     dz.classList.remove('has-files');
-    dz.innerHTML = `
-      <input type="file" id="file-input" multiple hidden>
-      <div class="plus">+</div>
-      <div class="drop-title">Выбрать файл</div>
-      <div class="drop-hint">Перетащите или выберите из хранилища</div>`;
-    initDropZone({
-      onFiles: (selected) => {
-        sendState.files = selected;
-        if (sendState.files.length) startScanningReceiver();
-      }
-    });
+    const plus = dz.querySelector('.plus');
+    const title = dz.querySelector('.drop-title');
+    const hint = dz.querySelector('.drop-hint');
+    const list = dz.querySelector('.file-list');
+    if (plus) plus.style.display = '';
+    if (title) title.textContent = 'Выбрать файл';
+    if (hint) hint.textContent = 'Перетащите или выберите из хранилища';
+    if (list) list.remove();
+    const inp = document.getElementById('file-input');
+    if (inp) { try { inp.value = ''; } catch (_) {} }
   }
   showStep('send', 'send-step-select');
 }
