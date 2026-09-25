@@ -1,1363 +1,1570 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
-
-    <!-- Yandex.Metrika counter -->
-    <script type="text/javascript">
-        (function(m,e,t,r,i,k,a){
-            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();
-            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112506059', 'ym');
-
-        ym(112506059, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-    </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/112506059" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-    <!-- /Yandex.Metrika counter -->
-
-  <link rel="icon" type="image/png" href="../favicon.png">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>FileDrop — Скачать | AxKuon</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-  <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-
-  <style>
-
-  /* Стилизация скроллбара браузера */
-    ::-webkit-scrollbar { width: 10px; }
-    ::-webkit-scrollbar-track { background: #0c0c0f; }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(167, 139, 250, 0.3);
-      border-radius: 5px;
-      border: 2px solid #0c0c0f;
-    }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(167, 139, 250, 0.5); }
-    html {
-      scrollbar-width: thin;
-      scrollbar-color: rgba(167, 139, 250, 0.3) #0c0c0f;
-    }
-
-    * {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-
-    img {
-      -webkit-user-drag: none;
-      -khtml-user-drag: none;
-      -moz-user-drag: none;
-      -o-user-drag: none;
-      user-drag: none;
-      pointer-events: none;
-    }
-
-    a {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      -webkit-user-drag: none;
-      -khtml-user-drag: none;
-      -moz-user-drag: none;
-      -o-user-drag: none;
-      user-drag: none;
-      -webkit-touch-callout: none;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #0c0c0f;
-      color: #e0e0e0;
-      line-height: 1.6;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: -50%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 800px;
-      height: 800px;
-      background: radial-gradient(circle, rgba(167, 139, 250, 0.06) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      background-color: rgba(12, 12, 15, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      z-index: 100;
-      padding: 16px 0;
-    }
-
-    .nav-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo {
-      font-weight: 700;
-      font-size: 1.8rem;
-      letter-spacing: -0.5px;
-      color: #ffffff;
-      text-decoration: none;
-    }
-
-    .logo span { color: #a78bfa; }
-
-    .logo span:first-of-type { font-weight: inherit; }
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-
-    .nav-links a {
-      color: #b0b0b0;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.95rem;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover { color: #ffffff; }
-
-    .btn-back {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #ccc;
-      padding: 8px 18px;
-      border-radius: 30px;
-      font-weight: 500;
-      text-decoration: none;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.9rem;
-    }
-
-    .btn-back:hover {
-      border-color: #a78bfa;
-      color: #fff;
-      background: rgba(167,139,250,0.1);
-    }
-
-    .breadcrumb {
-      padding: 24px 0 0;
-      font-size: 0.85rem;
-      color: #7c7c8a;
-    }
-
-    .breadcrumb a {
-      color: #a78bfa;
-      text-decoration: none;
-    }
-
-    .breadcrumb a:hover { text-decoration: underline; }
-    .breadcrumb span { margin: 0 6px; color: #555; }
-
-    .release-hero { padding: 32px 0; }
-
-    .release-header {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .app-icon {
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, rgba(167, 139, 250, 0.25) 0%, rgba(167, 139, 250, 0.1) 100%);
-      border: 1px solid rgba(167, 139, 250, 0.3);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      color: #a78bfa;
-      flex-shrink: 0;
-      overflow: hidden;
-      box-shadow: 0 0 24px -6px rgba(167, 139, 250, 0.4);
-    }
-
-    .release-title h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 8px;
-      letter-spacing: -0.5px;
-    }
-
-    .version-badge {
-      display: inline-block;
-      background: rgba(167, 139, 250, 0.2);
-      color: #c4b5fd;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 1rem;
-    }
-
-    .release-meta {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      font-size: 0.9rem;
-      color: #9090a0;
-      margin-bottom: 24px;
-    }
-
-    .release-meta span { display: flex; align-items: center; gap: 6px; }
-    .release-meta i { color: #a78bfa; }
-
-    .platform-tags {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-    }
-
-    .platform-tag {
-      font-size: 0.8rem;
-      padding: 6px 14px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.05);
-      color: #b0b0b0;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .platform-tag i { color: #a78bfa; }
-
-    /* Анимация появления */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(24px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .main-card {
-      position: relative;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 24px;
-      padding: 32px;
-      margin-bottom: 32px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      overflow: hidden;
-      animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
-    }
-
-    .description {
-      font-size: 1.05rem;
-      color: #c0c0d0;
-      margin-bottom: 28px;
-      line-height: 1.75;
-    }
-
-    .description p { white-space: pre-line; }
-
-    .changelog { margin-bottom: 32px; }
-
-    .changelog h2 {
-      font-size: 1.5rem;
-      color: #fff;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .changelog h2 i { color: #a78bfa; }
-
-    .changelog ul { list-style: none; padding: 0; }
-
-    .changelog li {
-      padding: 8px 0;
-      padding-left: 24px;
-      position: relative;
-      color: #b0b0c0;
-      font-size: 0.95rem;
-    }
-
-    .changelog li::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 14px;
-      width: 8px;
-      height: 8px;
-      background: #a78bfa;
-      border-radius: 50%;
-      box-shadow: 0 0 8px rgba(167, 139, 250, 0.6);
-    }
-
-    .screenshots {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 32px;
-      flex-wrap: wrap;
-    }
-
-    .screenshot {
-      flex: 1;
-      min-width: 200px;
-      height: 180px;
-      background: rgba(167, 139, 250, 0.08);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #555;
-      font-size: 0.9rem;
-      border: 1px dashed rgba(255,255,255,0.1);
-    }
-
-    .download-section { margin-bottom: 24px; }
-
-    .download-section h2 {
-      font-size: 1.5rem;
-      color: #fff;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .download-section h2 i { color: #a78bfa; }
-
-    .download-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .download-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px;
-      padding: 16px 20px;
-      flex-wrap: wrap;
-      gap: 12px;
-      transition: all 0.3s;
-    }
-
-    .download-row:hover {
-      border-color: rgba(167, 139, 250, 0.3);
-      background: linear-gradient(135deg, rgba(167, 139, 250, 0.06) 0%, rgba(167, 139, 250, 0.02) 100%);
-    }
-
-    .download-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .download-info i {
-      font-size: 1.5rem;
-      color: #a78bfa;
-      width: 32px;
-      text-align: center;
-      filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.5));
-    }
-
-    .download-info .file-name {
-      font-weight: 600;
-      color: #fff;
-      font-size: 0.95rem;
-    }
-
-    .download-info .file-meta {
-      font-size: 0.8rem;
-      color: #7c7c8a;
-      margin-top: 2px;
-    }
-
-    .btn-download {
-      background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
-      color: #0c0c0f;
-      font-weight: 700;
-      padding: 10px 22px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-size: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      border: none;
-      cursor: pointer;
-      white-space: nowrap;
-      box-shadow: 0 4px 16px -4px rgba(167, 139, 250, 0.4);
-    }
-
-    .btn-download:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px -4px rgba(167, 139, 250, 0.6);
-    }
-
-    .btn-download.outline {
-      background: transparent;
-      border: 1px solid #a78bfa;
-      color: #c4b5fd;
-      box-shadow: none;
-    }
-
-    .btn-download.outline:hover {
-      background: rgba(167,139,250,0.15);
-      box-shadow: 0 4px 16px -4px rgba(167, 139, 250, 0.4);
-    }
-
-    /* Веб-версия — выделяется */
-    .btn-download.web {
-      background: linear-gradient(135deg, #22d3ee 0%, #a78bfa 100%);
-      color: #0c0c0f;
-      box-shadow: 0 4px 16px -4px rgba(34, 211, 238, 0.5);
-    }
-
-    .btn-download.web:hover {
-      box-shadow: 0 8px 24px -4px rgba(34, 211, 238, 0.7);
-    }
-
-    .download-row.web-row {
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(167, 139, 250, 0.06) 100%);
-      border-color: rgba(34, 211, 238, 0.3);
-    }
-
-    .download-row.web-row:hover {
-      border-color: rgba(34, 211, 238, 0.6);
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.12) 0%, rgba(167, 139, 250, 0.08) 100%);
-    }
-
-    .badge-new {
-      display: inline-block;
-      background: linear-gradient(135deg, #22d3ee, #a78bfa);
-      color: #0c0c0f;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 10px;
-      margin-left: 8px;
-      vertical-align: middle;
-      letter-spacing: 0.5px;
-      animation: pulseNew 2s ease-in-out infinite;
-    }
-
-    @keyframes pulseNew {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.6); }
-      50% { box-shadow: 0 0 0 6px rgba(34, 211, 238, 0); }
-    }
-
-    .store-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .stores-section { margin-bottom: 32px; }
-
-    .stores-section h2 {
-      font-size: 1.5rem;
-      color: #fff;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .stores-section h2 i { color: #a78bfa; }
-
-    .store-buttons {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .btn-store {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #fff;
-      padding: 14px 24px;
-      border-radius: 16px;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 500;
-      transition: all 0.3s;
-      font-size: 0.95rem;
-    }
-
-    .btn-store:hover {
-      background: rgba(167, 139, 250, 0.1);
-      border-color: #a78bfa;
-      transform: translateY(-2px);
-    }
-
-    .btn-store i {
-      font-size: 1.5rem;
-      color: #a78bfa;
-      filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.4));
-    }
-
-    .requirements { margin-bottom: 32px; }
-
-    .requirements h2 {
-      font-size: 1.5rem;
-      color: #fff;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .requirements h2 i { color: #a78bfa; }
-
-    .req-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-    }
-
-    .req-item {
-      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 12px;
-      padding: 14px 16px;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
-
-    .req-item:hover {
-      border-color: rgba(167, 139, 250, 0.3);
-    }
-
-    .req-item .label {
-      color: #7c7c8a;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-
-    .req-item .value {
-      color: #e0e0e0;
-      font-weight: 500;
-    }
-
-    /* РЕКЛАМА */
-    .ad-side {
-      position: fixed;
-      top: 100px;
-      z-index: 50;
-      width: 240px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .ad-left { left: 30px; }
-    .ad-right { right: 30px; }
-
-    .ad-block {
-      width: 240px;
-      height: 400px;
-      min-height: 400px;
-      flex-shrink: 0;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .ad-block ins {
-      display: block !important;
-      width: 240px !important;
-      height: 400px !important;
-      margin: 0 !important;
-    }
-
-    .mobile-ad-top,
-    .mobile-ad-bottom { display: none; }
-
-    @media (max-width: 1500px) {
-      .ad-side { display: none; }
-
-      .mobile-ad-top,
-      .mobile-ad-bottom {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 12px 0;
-        width: 100%;
-      }
-
-      .mobile-ad-top {
-        background: rgba(255,255,255,0.02);
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-      }
-
-      .mobile-ad-bottom {
-        margin: 32px auto 24px;
-        max-width: 320px;
-      }
-    }
-
-    /* КНОПКА "НАВЕРХ" */
-    .scroll-top-btn {
-      position: fixed;
-      bottom: 32px;
-      right: 32px;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
-      border: none;
-      color: #0c0c0f;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow:
-        0 8px 24px -4px rgba(167, 139, 250, 0.5),
-        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(20px) scale(0.8);
-      z-index: 90;
-      font-family: inherit;
-    }
-
-    .scroll-top-btn.visible {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0) scale(1);
-    }
-
-    .scroll-top-btn:hover {
-      transform: translateY(-4px) scale(1.05);
-      box-shadow:
-        0 12px 32px -4px rgba(167, 139, 250, 0.7),
-        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
-    }
-
-    /* ФУТЕР */
-    .site-footer {
-      position: relative;
-      margin-top: 80px;
-      padding: 60px 0 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      background: linear-gradient(180deg, transparent 0%, rgba(167, 139, 250, 0.03) 100%);
-      z-index: 1;
-    }
-
-    .site-footer::before {
-      content: '';
-      position: absolute;
-      top: -1px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 200px;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #a78bfa, transparent);
-    }
-
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1.5fr;
-      gap: 48px;
-      padding-bottom: 48px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .footer-col h4 {
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #a78bfa;
-      margin-bottom: 20px;
-    }
-
-    .footer-logo {
-      font-weight: 700;
-      font-size: 1.8rem;
-      letter-spacing: -0.5px;
-      color: #ffffff;
-      text-decoration: none;
-      display: inline-block;
-      margin-bottom: 12px;
-    }
-
-    .footer-logo span { color: #a78bfa; }
-
-    .footer-tagline {
-      color: #9090a0;
-      font-size: 0.9rem;
-      line-height: 1.6;
-      max-width: 320px;
-    }
-
-    .footer-links {
-      list-style: none;
-      padding: 0;
-    }
-
-    .footer-links li { margin-bottom: 10px; }
-
-    .footer-links a {
-      color: #b0b0c0;
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .footer-links a:hover {
-      color: #c4b5fd;
-      transform: translateX(3px);
-    }
-
-    .footer-social {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .footer-social-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 12px;
-      border-radius: 10px;
-      text-decoration: none;
-      color: #b0b0c0;
-      font-size: 0.8rem;
-      font-weight: 500;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .footer-social-btn:hover {
-      color: #fff;
-      background: rgba(167, 139, 250, 0.15);
-      border-color: rgba(167, 139, 250, 0.35);
-      transform: translateY(-2px);
-    }
-
-    .footer-social-btn i {
-      font-size: 0.95rem;
-      color: #a78bfa;
-    }
-
-    .footer-bottom {
-      padding: 24px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .footer-copy {
-      color: #6b6b7a;
-      font-size: 0.85rem;
-    }
-
-    .footer-copy a {
-      color: #a78bfa;
-      text-decoration: none;
-    }
-
-    .footer-made {
-      color: #6b6b7a;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .footer-made i {
-      color: #a78bfa;
-      animation: heartBeat 1.5s ease-in-out infinite;
-    }
-
-    @keyframes heartBeat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
-    }
-
-    @media (max-width: 900px) {
-      .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 32px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      body {
-        overflow-x: hidden;
-        -webkit-text-size-adjust: 100%;
-      }
-
-      .container {
-        padding: 0 16px;
-        max-width: 100%;
-      }
-
-      header { padding: 12px 0; }
-      .nav-container {
-        flex-direction: column;
-        gap: 12px;
-      }
-      .nav-links {
-        gap: 12px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      .logo { font-size: 1.5rem; }
-      .btn-back { padding: 6px 14px; font-size: 0.85rem; }
-
-      .release-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
-      .app-icon {
-        width: 64px;
-        height: 64px;
-      }
-      .release-title h1 { font-size: 1.6rem; }
-      .version-badge { font-size: 0.85rem; padding: 4px 12px; }
-
-      .main-card {
-        padding: 20px 16px;
-        border-radius: 16px;
-      }
-      .description { font-size: 1rem; }
-
-      .download-section h2,
-      .stores-section h2,
-      .requirements h2,
-      .changelog h2 {
-        font-size: 1.2rem;
-      }
-
-      .download-row {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 14px 16px;
-        gap: 12px;
-      }
-      .download-info { width: 100%; }
-      .download-count {
-        margin-left: 0 !important;
-        width: 100%;
-        text-align: left;
-      }
-      .btn-download {
-        width: 100%;
-        justify-content: center;
-        padding: 12px 18px;
-        font-size: 0.95rem;
-      }
-
-      .store-buttons { width: 100%; }
-      .btn-store {
-        width: 100%;
-        padding: 12px 18px;
-        justify-content: flex-start;
-      }
-
-      .req-grid { grid-template-columns: 1fr 1fr; }
-      .req-item { padding: 12px; font-size: 0.85rem; }
-
-      .screenshots { flex-direction: column; }
-      .screenshot { min-width: 100%; height: 160px; }
-
-      main > div:last-child {
-        flex-direction: column;
-        gap: 12px !important;
-      }
-
-      .scroll-top-btn {
-        bottom: 20px;
-        right: 20px;
-        width: 46px;
-        height: 46px;
-        font-size: 1rem;
-      }
-
-      .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 32px;
-        padding-bottom: 32px;
-      }
-
-      .footer-social { grid-template-columns: 1fr 1fr; }
-      .footer-bottom { flex-direction: column; text-align: center; }
-      .site-footer { padding: 40px 0 0; }
-    }
-
-    @media (max-width: 420px) {
-      .req-grid { grid-template-columns: 1fr; }
-      .release-title h1 { font-size: 1.4rem; }
-      .main-card { padding: 16px 12px; }
-      .container { padding: 0 12px; }
-      .footer-social { grid-template-columns: 1fr; }
-    }
-
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0c0c0f">
+
+<!-- ============ PWA: добавление на главный экран ============ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FileDrop">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMGMwYzBmIi8+PHBhdGggZD0iTTYwIDUwIEgxMjAgTDE0MCA3MCBWMTMwIEg2MCBaIiBmaWxsPSIjYTc4YmZhIi8+PHRleHQgeD0iOTAiIHk9IjExMCIgZm9udC1zaXplPSI0MCIgZmlsbD0iIzBjMGMwZiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RjwvdGV4dD48L3N2Zz4=">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMGMwYzBmIi8+PHBhdGggZD0iTTYwIDUwIEgxMjAgTDE0MCA3MCBWMTMwIEg2MCBaIiBmaWxsPSIjYTc4YmZhIi8+PHRleHQgeD0iOTAiIHk9IjExMCIgZm9udC1zaXplPSI0MCIgZmlsbD0iIzBjMGMwZiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RjwvdGV4dD48L3N2Zz4=">
+
+<title>FileDrop — Передача файлов | AxKuon</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script async src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script async src="https://ad.mail.ru/static/ads-async.js"></script>
+
+<style>
+:root {
+  --bg: #0c0c0f; --bg-card: #16161a; --bg-input: #1c1c22;
+  --text: #e0e0e0; --text-muted: #7c7c8a;
+  --accent: #a78bfa; --accent-hover: #c4b5fd;
+  --accent-soft: rgba(167, 139, 250, 0.1);
+  --success: #10b981; --danger: #ef4444;
+  --border: #2a2a30; --border-soft: rgba(255, 255, 255, 0.06);
+  --radius: 20px; --radius-sm: 12px;
+  --shadow-sm: 0 4px 16px rgba(0,0,0,0.35);
+  --shadow-md: 0 12px 32px rgba(0,0,0,0.5);
+  --shadow-accent: 0 8px 24px -4px rgba(167, 139, 250, 0.4);
+}
+[data-theme="light"] {
+  --bg: #fafafa; --bg-card: #ffffff; --bg-input: #f2f2f7;
+  --text: #0c0c0f; --text-muted: #7c7c8a;
+  --accent-soft: rgba(167, 139, 250, 0.12);
+  --border: #e5e5ea; --border-soft: #ececf0;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+  --shadow-accent: 0 8px 24px -4px rgba(167, 139, 250, 0.3);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+  -webkit-touch-callout: none; }
+img { -webkit-user-drag: none; user-drag: none; }
+a { -webkit-user-select: none; user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
+input, textarea { -webkit-user-select: text; user-select: text; }
+html, body { height: 100%; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.5;
+  min-height: 100vh; -webkit-font-smoothing: antialiased;
+  transition: background 0.25s ease, color 0.25s ease; position: relative; overflow-x: hidden;
+  padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+body::before { content: ''; position: fixed; top: -50%; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.08) 0%, transparent 60%);
+  pointer-events: none; z-index: 0; }
+.app { display: flex; flex-direction: column; min-height: 100vh; position: relative; z-index: 1; }
+.header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px;
+  gap: 12px; background: rgba(12, 12, 15, 0.85); backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-soft);
+  position: sticky; top: 0; z-index: 10; }
+[data-theme="light"] .header { background: rgba(250, 250, 250, 0.85); }
+.header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.header h1 span { color: var(--accent); }
+.back-btn { color: var(--text); background: none; border: none; cursor: pointer;
+  font-size: 1.5rem; line-height: 1; padding: 4px 10px 4px 0; font-weight: 300;
+  font-family: inherit; transition: color 0.2s; }
+.back-btn:hover { color: var(--accent); }
+.theme-toggle { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-soft);
+  background: var(--bg-card); color: var(--text); font-size: 1.1rem; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 0.2s, transform 0.1s, border-color 0.2s; box-shadow: var(--shadow-sm); }
+.theme-toggle:hover { border-color: var(--accent); }
+.theme-toggle:active { transform: scale(0.95); }
+.main { flex: 1; padding: 8px 20px 32px; max-width: 560px; margin: 0 auto; width: 100%; }
+.screen { display: none; }
+.screen.active { display: block; }
+.step { display: none; }
+.step.active { display: block; animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.section-icon { font-size: 1.6rem; flex-shrink: 0; }
+.section-title-block { flex: 1; min-width: 0; }
+.section-header h2 { font-size: 1.35rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
+.section-sub { display: flex; flex-direction: column; align-items: flex-end; font-size: 0.65rem;
+  font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.3;
+  margin-left: auto; flex-shrink: 0; }
+.section-sub .wifi, .section-sub .socket { color: var(--accent); }
+.card-grid { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+.card { background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
+  border-radius: var(--radius); padding: 22px; text-decoration: none; color: var(--text);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), border-color 0.3s, box-shadow 0.3s;
+  display: block; position: relative; box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-soft); cursor: pointer;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow: hidden; }
+.card:hover { border-color: rgba(167,139,250,0.35); transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(0,0,0,0.5), 0 0 40px -10px rgba(167,139,250,0.25); }
+.card:active { transform: scale(0.98); }
+.card-top { margin-bottom: 12px; }
+.card-icon { font-size: 1.8rem; display: inline-block;
+  filter: drop-shadow(0 0 12px rgba(167,139,250,0.4)); }
+.card h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
+.card p { color: var(--text-muted); font-size: 0.9rem; padding-right: 32px; }
+.card-arrow { position: absolute; right: 22px; top: 50%; transform: translateY(-50%);
+  font-size: 1.4rem; color: var(--accent); transition: transform 0.2s; }
+.card:hover .card-arrow { transform: translateY(-50%) translateX(4px); }
+.drop-zone { background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
+  border: 2px dashed rgba(167,139,250,0.25); border-radius: var(--radius);
+  padding: 40px 20px; text-align: center; cursor: pointer;
+  transition: border-color 0.25s, background 0.25s; margin-bottom: 16px;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.drop-zone:active, .drop-zone.dragover { border-color: var(--accent); background: var(--accent-soft);
+  box-shadow: 0 0 40px -10px rgba(167,139,250,0.4); }
+.drop-zone .plus { font-size: 2rem; color: var(--accent); line-height: 1; margin-bottom: 10px;
+  font-weight: 300; filter: drop-shadow(0 0 12px rgba(167,139,250,0.5)); }
+.drop-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
+.drop-hint { font-size: 0.85rem; color: var(--text-muted); }
+.drop-zone.has-files { border-style: solid; border-color: var(--accent);
+  background: var(--accent-soft); text-align: left; padding: 18px; }
+.drop-zone .file-list { display: flex; flex-direction: column; gap: 4px; margin-top: 10px;
+  font-size: 0.85rem; max-height: 180px; overflow-y: auto; }
+.drop-zone .file-list .file-item { display: flex; justify-content: space-between; gap: 8px;
+  padding: 4px 0; border-bottom: 1px solid var(--border-soft); }
+.drop-zone .file-list .file-item:last-child { border-bottom: none; }
+.drop-zone .file-list .file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.drop-zone .file-list .file-size { color: var(--text-muted); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 15px 24px; border: none; border-radius: 30px; font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: background 0.25s, transform 0.1s, opacity 0.2s, box-shadow 0.25s;
+  width: 100%; text-decoration: none; font-family: inherit; letter-spacing: 0.01em; line-height: 1.2; }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); color: #0c0c0f;
+  box-shadow: var(--shadow-accent); }
+.btn-primary:hover:not(:disabled) { transform: translateY(-2px);
+  box-shadow: 0 12px 32px -4px rgba(167,139,250,0.6); }
+.btn-secondary { background: var(--bg-card); color: var(--text); border: 1px solid var(--border-soft); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent-hover); }
+.btn-share { background: linear-gradient(135deg, #22d3ee 0%, #a78bfa 100%); color: #0c0c0f;
+  box-shadow: 0 8px 24px -4px rgba(34, 211, 238, 0.5); }
+.btn-share:hover:not(:disabled) { transform: translateY(-2px);
+  box-shadow: 0 12px 32px -4px rgba(34, 211, 238, 0.7); }
+.hint { color: var(--text-muted); font-size: 0.9rem; text-align: center; margin: 12px 0 16px; line-height: 1.5; }
+.qr-container { display: flex; justify-content: center; align-items: center; padding: 20px;
+  background: #fff; border-radius: var(--radius); margin: 8px 0 16px;
+  box-shadow: var(--shadow-sm); min-height: 300px; border: 1px solid var(--border-soft); }
+.qr-container canvas { display: block; max-width: 320px; width: 100%; height: auto;
+  image-rendering: pixelated; image-rendering: crisp-edges; }
+.qr-placeholder { color: #666; font-size: 0.9rem; text-align: center; padding: 20px; }
+.scanner-container { position: relative; width: 100%; max-width: 400px; margin: 0 auto 16px;
+  aspect-ratio: 1 / 1; background: #000; border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow-md); }
+.scanner-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block; }
+.scan-overlay { position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; pointer-events: none; }
+.scan-box { width: 68%; height: 68%; border: 3px solid var(--accent); border-radius: 20px;
+  box-shadow: 0 0 0 2000px rgba(0,0,0,0.55), 0 0 24px rgba(167,139,250,0.6); }
+.camera-error { position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 20px; text-align: center;
+  background: #000; color: #fff; font-size: 0.85rem; line-height: 1.5; }
+.camera-error .icon { font-size: 2.5rem; margin-bottom: 12px; }
+.camera-error .msg { max-width: 280px; }
+.camera-error .hint { color: #aaa; font-size: 0.75rem; margin-top: 12px; }
+.transfer-info { background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
+  border-radius: var(--radius); padding: 20px; margin-bottom: 16px;
+  border: 1px solid var(--border-soft); box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+#send-file-list, #recv-file-list { font-size: 0.9rem; color: var(--text); margin-bottom: 12px;
+  word-break: break-word; font-weight: 500; }
+.progress-bar { height: 8px; background: var(--bg-input); border-radius: 4px;
+  overflow: hidden; margin: 12px 0; border: 1px solid var(--border-soft); }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+  width: 0%; transition: width 0.2s ease; border-radius: 4px;
+  box-shadow: 0 0 12px rgba(167,139,250,0.5); }
+.progress-text { font-size: 0.9rem; color: var(--text); font-variant-numeric: tabular-nums; font-weight: 500; }
+.speed-text { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.success-icon { font-size: 3.5rem; text-align: center; margin-bottom: 12px;
+  filter: drop-shadow(0 0 24px rgba(167,139,250,0.5));
+  animation: pop 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+@keyframes pop { 0% { transform: scale(0.5); opacity: 0; } 60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); } }
+.step-done { text-align: center; padding-top: 40px; }
+.step-done h2 { margin-bottom: 8px; font-size: 1.4rem; font-weight: 700; }
+.step-done p { color: var(--text-muted); margin-bottom: 24px; }
+.footer-links { margin-top: 32px; display: flex; flex-direction: column; gap: 8px; text-align: center; }
+.footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+.footer-links a:hover { color: var(--accent); }
+.toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  z-index: 1000; display: flex; flex-direction: column; gap: 8px;
+  width: calc(100% - 40px); max-width: 400px; pointer-events: none; }
+.toast { background: var(--bg-card); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm); padding: 12px 16px; font-size: 0.9rem; text-align: center;
+  color: var(--text); animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+  pointer-events: auto; box-shadow: var(--shadow-md); word-break: break-word;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.toast.success { border-color: var(--success); color: var(--success);
+  box-shadow: 0 8px 24px -8px rgba(16,185,129,0.5); }
+.toast.error { border-color: var(--danger); color: var(--danger);
+  box-shadow: 0 8px 24px -8px rgba(239,68,68,0.5); }
+.toast.info { border-color: rgba(167,139,250,0.4); color: var(--accent-hover); }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.code-box { display: flex; gap: 8px; margin-bottom: 12px; }
+.code-box input { flex: 1; padding: 12px 14px; background: var(--bg-input);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text);
+  font-size: 0.8rem; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  outline: none; text-overflow: ellipsis; }
+.code-box button { padding: 12px 16px; background: var(--bg-card); border: 1px solid var(--border-soft);
+  color: var(--text); border-radius: var(--radius-sm); font-weight: 600; cursor: pointer;
+  font-family: inherit; font-size: 0.85rem; white-space: nowrap; transition: 0.2s; }
+.code-box button:hover { border-color: var(--accent); color: var(--accent); }
+.code-box button:active { transform: scale(0.95); }
+.community-btn { display: block; background: linear-gradient(135deg, rgba(167,139,250,0.15) 0%, rgba(139,92,246,0.08) 100%);
+  color: var(--accent); text-align: center; padding: 16px; border-radius: var(--radius);
+  text-decoration: none; font-weight: 700; letter-spacing: 0.08em; font-size: 0.95rem;
+  margin-top: 24px; transition: background 0.25s, color 0.25s, transform 0.2s;
+  border: 1px solid rgba(167,139,250,0.25); }
+.community-btn:hover { background: linear-gradient(135deg, rgba(167,139,250,0.25) 0%, rgba(139,92,246,0.15) 100%);
+  color: var(--accent-hover); transform: translateY(-2px); }
+.mobile-ad-top, .mobile-ad-bottom { display: none; }
+.ad-side { position: fixed; top: 100px; z-index: 50; width: 240px;
+  display: flex; flex-direction: column; gap: 20px; }
+.ad-left { left: 20px; }
+.ad-right { right: 20px; }
+.ad-block { width: 240px; height: 400px; min-height: 400px; flex-shrink: 0; overflow: hidden; position: relative; }
+.ad-block ins { display: block !important; width: 240px !important; height: 400px !important; margin: 0 !important; }
+@media (max-width: 1500px) {
+  .ad-side { display: none; }
+  .mobile-ad-top, .mobile-ad-bottom { display: flex; justify-content: center; align-items: center;
+    padding: 12px 0; width: 100%; }
+  .mobile-ad-top { background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .mobile-ad-bottom { flex-direction: column; gap: 16px; margin: 24px auto; max-width: 320px; }
+}
+@media (min-width: 480px) { .main { padding: 8px 24px 40px; } }
+@media (min-width: 720px) { .card-grid { flex-direction: row; } .card { flex: 1; } }
+
+/* iOS install hint */
+#ios-install-hint { display:none; position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+  z-index:2000; width:calc(100% - 32px); max-width:420px; }
+#ios-install-hint .hint-card { background:linear-gradient(135deg,#a78bfa,#8b5cf6); color:#0c0c0f;
+  border-radius:16px; padding:14px 16px; box-shadow:0 12px 32px rgba(0,0,0,0.5);
+  font-family:'Inter',sans-serif; display:flex; align-items:center; gap:12px; }
+#ios-install-hint .hint-icon { font-size:1.6rem; }
+#ios-install-hint .hint-text { flex:1; font-size:0.85rem; font-weight:600; line-height:1.4; }
+#ios-install-hint .hint-text small { font-weight:400; display:block; margin-top:2px; }
+#ios-install-hint .hint-close { background:rgba(0,0,0,0.2); border:none; color:#0c0c0f;
+  width:32px; height:32px; border-radius:50%; font-size:1rem; cursor:pointer; font-weight:700; }
+</style>
 </head>
-
 <body>
-  <header>
-    <div class="container nav-container">
-      <a href="../index.html" class="logo">
-        Ax<span>Kuon</span>
-      </a>
-      <div class="nav-links">
-        <a href="../index.html">Главная</a>
-        <a href="../news.html">Новости</a>
-        <a href="../releases.html" class="btn-back"><i class="fas fa-arrow-left"></i> Все релизы</a>
-      </div>
+<div class="app">
+  <header class="header">
+    <div class="header-left">
+      <button id="back-btn" class="back-btn" style="display:none">←</button>
+      <h1 id="page-title">FileDrop <span>by AxKuon</span></h1>
     </div>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">
+      <span class="theme-icon">🌙</span>
+    </button>
   </header>
 
-  <!-- Мобильная реклама сверху -->
   <div class="mobile-ad-top">
-    <ins class="mrg-tag" 
-        style="display:inline-block;width:320px;height:50px"
-        data-ad-client="ad-2064565" 
-        data-ad-slot="2064565">
-    </ins>
+    <ins class="mrg-tag" style="display:inline-block;width:320px;height:50px"
+         data-ad-client="ad-2064565" data-ad-slot="2064565"></ins>
   </div>
 
-  <main class="container">
-    <div class="breadcrumb">
-      <a href="../index.html">Главная</a><span>/</span><a href="../releases.html">Релизы</a><span>/</span>FileDrop
+  <main class="main">
+    <div id="screen-home" class="screen active">
+      <div class="card-grid">
+        <div class="card" data-goto="send">
+          <div class="card-top"><span class="card-icon">📤</span></div>
+          <h2>Отправить файл</h2>
+          <p>Отсканировать QR получателя и передать</p>
+          <span class="card-arrow">→</span>
+        </div>
+        <div class="card" data-goto="receive">
+          <div class="card-top"><span class="card-icon">📥</span></div>
+          <h2>Получить файл</h2>
+          <p>Показать QR и ждать файл</p>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/Nekeos/FileDrop/releases" target="_blank" rel="noopener">💻 Desktop версия</a>
+        <a href="https://www.rustore.ru/catalog/developer/ch7shq" target="_blank" rel="noopener">📱 Android в RuStore</a>
+      </div>
+      <a href="https://axkuon.ru" target="_blank" rel="noopener" class="community-btn">✨ СООБЩЕСТВО AXKUON</a>
     </div>
 
-    <div class="release-hero">
-      <div class="release-header">
-        <div class="app-icon">
-           <img src="../images/FileDrop/FileDrop-icon.png" alt="FileDrop" style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
+    <div id="screen-send" class="screen">
+      <div id="send-step-select" class="step active">
+        <div class="section-header">
+          <span class="section-icon">📤</span>
+          <div class="section-title-block">
+            <h2>Отправить файл</h2>
+            <div class="section-sub"><span class="wifi">WI-FI</span><span class="socket">P2P</span></div>
+          </div>
         </div>
-        <div class="release-title">
-          <h1>FileDrop</h1>
-          <span class="version-badge">v2.3.0</span>
-        </div>
-      </div>
-
-      <div class="release-meta">
-        <span><i class="far fa-calendar-alt"></i> 24 Сентября 2026</span>
-        <span><i class="fas fa-code-branch"></i> Стабильная версия</span>
-      </div>
-
-      <div class="platform-tags">
-        <span class="platform-tag"><i class="fab fa-windows"></i> Windows</span>
-        <span class="platform-tag"><i class="fab fa-android"></i> Android</span>
-        <span class="platform-tag"><i class="fas fa-globe"></i> Web</span>
-      </div>
-    </div>
-
-    <!-- ============================================ -->
-    <!-- ОСНОВНАЯ КАРТОЧКА -->
-    <!-- ============================================ -->
-    <div class="main-card">
-      <!-- Описание -->
-      <div class="description">
-        <p><strong>FileDrop</strong> — передача файлов между ПК и Android по Wi-Fi.
-
-Без проводов и интернета. Подключи оба устройства к одной сети, отсканируй QR-код — и отправляй файлы в любую сторону.
-
-Ключевые возможности:
-• Отправка и приём файлов
-• Подключение по QR-коду
-• Выбор папки сохранения
-• Русский и английский интерфейс
-• Светлая и тёмная тема
-• Windows + Linux
-
-Просто. Быстро. Безопасно.</p>
-      </div>
-
-      <!-- Что нового -->
-      <div class="changelog">
-        <h2><i class="fas fa-clipboard-list"></i> Что нового в v2.3.0</h2>
-        <ul>
-          <li>Новый дизайн</li>
-          <li>Добавлены новые языки</li>
-          <li>Исправлена ошибка с QR на Android</li>
-          <li>Ускорен протокол передачи</li>
-          <li>Сделан удобный инсталлер для exe</li>
-          <li>Улучшена оптимизация</li>
-          <li>Появилась веб-версия FileDrop</li>
-        </ul>
-      </div>
-
-      <!-- Скачивание -->
-      <div class="download-section">
-        <h2><i class="fas fa-download"></i> Прямые ссылки на скачивание</h2>
-        <div class="download-grid">
-
-          <!-- Windows .exe -->
-          <div class="download-row">
-            <div class="download-info">
-              <i class="fab fa-windows"></i>
-              <div>
-                <div class="file-name">FileDrop.exe</div>
-                <div class="file-meta">Windows · 50.6 МБ</div>
-              </div>
-            </div>
-
-            <span class="download-count" data-file="exe" style="color: #9090a0; font-size: 0.85rem; margin-left: auto;">
-              Скачиваний
-            </span>
-
-            <a href="https://github.com/Nekeos/FileDrop/releases/download/V2.3.0/FileDrop_Setup_v2.3.0.exe" 
-               class="btn-download" 
-               download>
-              <i class="fas fa-download"></i> Скачать .exe
-            </a>
-          </div>
-
-          <!-- Android apk -->
-          <div class="download-row">
-            <div class="download-info">
-              <i class="fab fa-android"></i>
-              <div>
-                <div class="file-name">FileDrop.apk</div>
-                <div class="file-meta">Android 8.0+ · 14.4 МБ</div>
-              </div>
-            </div>
-
-            <span class="download-count" data-file="apk" style="color: #9090a0; font-size: 0.85rem; margin-left: auto;">
-              Скачиваний
-            </span>
-
-            <a href="https://github.com/Nekeos/FileDrop/releases/download/V2.3.0/FileDrop_v3.0.0.apk" 
-               class="btn-download" 
-               download>
-              <i class="fas fa-download"></i> Скачать .apk
-            </a>
-          </div>
-
-          <!-- ✅ Веб-версия -->
-          <div class="download-row web-row">
-            <div class="download-info">
-              <i class="fas fa-globe"></i>
-              <div>
-                <div class="file-name">
-                  FileDrop Web <span class="badge-new">NEW</span>
-                </div>
-                <div class="file-meta">Браузер · без установки · любой OS</div>
-              </div>
-            </div>
-
-            <span class="download-count" style="color: #9090a0; font-size: 0.85rem; margin-left: auto;">
-              Онлайн
-            </span>
-
-            <a href="https://axkuon.ru/Web/FileDrop_web.html" 
-               class="btn-download web" 
-               target="_blank"
-               rel="noopener">
-              <i class="fas fa-external-link-alt"></i> Открыть веб-версию
-            </a>
-          </div>
-
+        <div class="drop-zone" id="drop-zone">
+          <input type="file" id="file-input" multiple hidden>
+          <div class="plus">+</div>
+          <div class="drop-title">Выбрать файл</div>
+          <div class="drop-hint">Перетащите или выберите из хранилища</div>
         </div>
       </div>
 
-      <!-- Магазины -->
-      <div class="stores-section">
-        <h2><i class="fas fa-store"></i> Скачать из сторонних источников</h2>
-        <div class="store-grid">
-          <div class="store-buttons">
-            <a href="https://www.rustore.ru/catalog/app/com.myname.socketflow" class="btn-store">
-              <i class="fas fa-store"></i>
-              <div>
-                <div style="font-size: 0.75rem; color: #9090a0;">Доступно в</div>
-                <div style="font-weight: 600;">RuStore</div>
-              </div>
-            </a>
+      <div id="send-step-scan" class="step">
+        <div class="section-header">
+          <span class="section-icon">📷</span>
+          <div class="section-title-block">
+            <h2>Сканирование получателя</h2>
+            <div class="section-sub"><span class="wifi">ОТПРАВИТЕЛЬ</span><span class="socket">ПОИСК</span></div>
           </div>
+        </div>
+        <p class="hint">Наведите камеру на QR-код получателя <b>ИЛИ</b> вставьте код вручную ниже</p>
+        <div class="scanner-container" id="send-scanner-wrap">
+          <video id="send-scanner-video" playsinline autoplay muted></video>
+          <canvas id="send-scanner-canvas" style="display:none"></canvas>
+          <div class="scan-overlay"><div class="scan-box"></div></div>
+        </div>
+        <p class="hint" style="margin-top:8px">Вставить код получателя:</p>
+        <div class="code-box">
+          <input type="text" id="offer-code-input" placeholder="Вставьте код сюда...">
+          <button id="btn-apply-offer">OK</button>
+        </div>
+        <button class="btn btn-secondary" id="btn-send-cancel-scan" style="margin-top:12px">Отмена</button>
+      </div>
 
-          <div class="store-buttons">
-            <a href="https://github.com/Nekeos/FileDrop/releases/tag/V2.3.0" class="btn-store">
-              <i class="fab fa-github"></i>
-              <div>
-                <div style="font-size: 0.75rem; color: #9090a0;">Доступно на</div>
-                <div style="font-weight: 600;">GitHub</div>
-              </div>
-            </a>
+      <div id="send-step-show-answer" class="step">
+        <div class="section-header">
+          <span class="section-icon">📡</span>
+          <div class="section-title-block">
+            <h2>Отправьте код получателю</h2>
+            <div class="section-sub"><span class="wifi">ОТПРАВИТЕЛЬ</span><span class="socket">ОТВЕТ</span></div>
           </div>
+        </div>
+        <p class="hint">Отправьте этот код получателю через Telegram / WhatsApp / SMS. Он должен открыть ссылку — и передача начнётся.</p>
+
+        <button class="btn btn-share" id="btn-share-link">📤 Поделиться ссылкой</button>
+        <p class="hint" style="margin-top:16px">Или скопируйте код вручную:</p>
+        <div class="code-box">
+          <input type="text" id="answer-code-output" readonly>
+          <button id="btn-copy-answer">📋</button>
+        </div>
+
+        <div class="transfer-info" style="margin-top:16px">
+          <p id="send-file-list"></p>
+          <div class="progress-bar"><div class="progress-fill" id="send-progress-fill"></div></div>
+          <p class="progress-text" id="send-progress-text">Ожидание подключения получателя...</p>
+          <p class="speed-text" id="send-speed-text"></p>
         </div>
       </div>
 
-      <!-- Системные требования -->
-      <div class="requirements">
-        <h2><i class="fas fa-microchip"></i> Системные требования</h2>
-        <div class="req-grid">
-          <div class="req-item">
-            <div class="label">Windows</div>
-            <div class="value">Windows 7 или новее</div>
-          </div>
-          <div class="req-item">
-            <div class="label">Процессор</div>
-            <div class="value">1 ГГц, 1 ядро</div>
-          </div>
-          <div class="req-item">
-            <div class="label">ОЗУ</div>
-            <div class="value">1 ГБ</div>
-          </div>
-          <div class="req-item">
-            <div class="label">Место на диске</div>
-            <div class="value">60 МБ свободного места</div>
-          </div>
-          <div class="req-item">
-            <div class="label">Сеть</div>
-            <div class="value">Wi-Fi / Ethernet</div>
-          </div>
-          <div class="req-item">
-            <div class="label">Браузер (Web)</div>
-            <div class="value">Chrome, Safari, Edge</div>
-          </div>
-        </div>
+      <div id="send-step-done" class="step step-done">
+        <div class="success-icon">✅</div>
+        <h2>Файлы отправлены!</h2>
+        <p id="sent-summary"></p>
+        <button class="btn btn-primary" id="btn-send-home">На главную</button>
       </div>
     </div>
 
-    <!-- Ссылка на GitHub -->
-    <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; font-size: 0.9rem;">
-      <a href="https://github.com/Nekeos/FileDrop" style="color: #a78bfa; text-decoration: none; display: flex; align-items: center; gap: 6px;">
-        <i class="fab fa-github"></i> Исходный код на GitHub
-      </a>
+    <div id="screen-receive" class="screen">
+      <div id="recv-step-show-qr" class="step active">
+        <div class="section-header">
+          <span class="section-icon">📥</span>
+          <div class="section-title-block">
+            <h2>Получить файл</h2>
+            <div class="section-sub"><span class="wifi">ПОЛУЧАТЕЛЬ</span><span class="socket">ГОТОВ</span></div>
+          </div>
+        </div>
+        <p class="hint">Покажите этот QR-код отправителю. Он отсканирует — и вы получите файл.</p>
+        <div class="qr-container" id="offer-qr-wrap"><canvas id="offer-qr-canvas"></canvas></div>
+        <p class="hint" style="margin-top:8px">Или отправьте отправителю этот код:</p>
+        <div class="code-box">
+          <input type="text" id="offer-code-output" readonly>
+          <button id="btn-copy-offer">📋</button>
+        </div>
+        <p class="hint" style="margin-top:16px">Ждём подключения отправителя...</p>
+        <div class="transfer-info">
+          <p id="recv-file-list"></p>
+          <div class="progress-bar"><div class="progress-fill" id="recv-progress-fill"></div></div>
+          <p class="progress-text" id="recv-progress-text">Ожидание файлов...</p>
+          <p class="speed-text" id="recv-speed-text"></p>
+        </div>
+      </div>
+
+      <div id="recv-step-done" class="step step-done">
+        <div class="success-icon">✅</div>
+        <h2>Файлы получены!</h2>
+        <p id="received-summary"></p>
+        <button class="btn btn-primary" id="btn-recv-home">На главную</button>
+      </div>
     </div>
   </main>
+</div>
 
-  <!-- Мобильная реклама снизу -->
-  <div class="mobile-ad-bottom">
-    <ins class="mrg-tag" 
-        style="display:inline-block;width:240px;height:400px"
-        data-ad-client="ad-2064264" 
-        data-ad-slot="2064264">
-    </ins>
-  </div>
-
-  <!-- ФУТЕР -->
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-col">
-          <a href="../index.html" class="footer-logo">
-            Ax<span>Kuon</span>
-          </a>
-          <p class="footer-tagline">
-            Создаём приложения для Android, Linux и Windows. Поддерживаем open-source проекты и развиваем сообщество разработчиков.
-          </p>
-        </div>
-
-        <div class="footer-col">
-          <h4>Разделы</h4>
-          <ul class="footer-links">
-            <li><a href="../index.html"><i class="fas fa-home"></i> Главная</a></li>
-            <li><a href="../releases.html"><i class="fas fa-rocket"></i> Релизы</a></li>
-            <li><a href="../news.html"><i class="far fa-newspaper"></i> Новости</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>Мы в соцсетях</h4>
-          <div class="footer-social">
-            <a href="https://t.me/AxKuon" class="footer-social-btn" target="_blank" rel="noopener">
-              <i class="fab fa-telegram"></i> Telegram
-            </a>
-            <a href="https://max.ru/channel_axkuon" class="footer-social-btn" target="_blank" rel="noopener">
-              <i class="fas fa-comment-dots"></i> MAX
-            </a>
-            <a href="https://vk.ru/axkuon" class="footer-social-btn" target="_blank" rel="noopener">
-              <i class="fab fa-vk"></i> VK
-            </a>
-            <a href="https://www.rustore.ru/catalog/developer/ch7shq" class="footer-social-btn" target="_blank" rel="noopener">
-              <i class="fas fa-store"></i> RuStore
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <div class="footer-copy">
-          © 2026 <a href="../index.html">AxKuon.ru</a> — приложения для Android, Linux и Windows, open-source проекты.
-        </div>
-        <div class="footer-made">
-          Made with <i class="fas fa-heart"></i> by AxKuon team
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- КНОПКА "НАВЕРХ" -->
-  <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Наверх" type="button">
-    <i class="fas fa-arrow-up"></i>
-  </button>
-
-<!-- Левый столбец рекламы (ПК) -->
 <div class="ad-side ad-left">
-  <div class="ad-block">
-    <ins class="mrg-tag" 
-        style="display:inline-block;width:240px;height:400px"
-        data-ad-client="ad-2064264" 
-        data-ad-slot="2064264">
-    </ins>
-  </div>
-  <div class="ad-block">
-    <ins class="mrg-tag" 
-        style="display:inline-block;width:240px;height:400px"
-        data-ad-client="ad-2064264" 
-        data-ad-slot="2064264">
-    </ins>
+  <div class="ad-block"><ins class="mrg-tag" style="display:inline-block;width:240px;height:400px"
+    data-ad-client="ad-2064264" data-ad-slot="2064264"></ins></div>
+  <div class="ad-block"><ins class="mrg-tag" style="display:inline-block;width:240px;height:400px"
+    data-ad-client="ad-2064264" data-ad-slot="2064264"></ins></div>
+</div>
+<div class="ad-side ad-right">
+  <div class="ad-block"><ins class="mrg-tag" style="display:inline-block;width:240px;height:400px"
+    data-ad-client="ad-2064264" data-ad-slot="2064264"></ins></div>
+  <div class="ad-block"><ins class="mrg-tag" style="display:inline-block;width:240px;height:400px"
+    data-ad-client="ad-2064264" data-ad-slot="2064264"></ins></div>
+</div>
+<div class="mobile-ad-bottom">
+  <ins class="mrg-tag" style="display:inline-block;width:240px;height:400px"
+       data-ad-client="ad-2064264" data-ad-slot="2064264"></ins>
+  <ins class="mrg-tag" style="display:inline-block;width:240px;height:400px"
+       data-ad-client="ad-2064264" data-ad-slot="2064264"></ins>
+</div>
+
+<!-- Плашка "Добавь на главный экран" для iOS -->
+<div id="ios-install-hint">
+  <div class="hint-card">
+    <div class="hint-icon">📲</div>
+    <div class="hint-text">
+      Добавь FileDrop на главный экран
+      <small>Нажми «Поделиться» → «На экран "Домой"»</small>
+    </div>
+    <button class="hint-close" id="ios-hint-close" type="button">✕</button>
   </div>
 </div>
 
-<!-- Правый столбец рекламы (ПК) -->
-<div class="ad-side ad-right">
-  <div class="ad-block">
-    <ins class="mrg-tag" 
-        style="display:inline-block;width:240px;height:400px"
-        data-ad-client="ad-2064264" 
-        data-ad-slot="2064264">
-    </ins>
-  </div>
-  <div class="ad-block">
-    <ins class="mrg-tag" 
-        style="display:inline-block;width:240px;height:400px"
-        data-ad-client="ad-2064264" 
-        data-ad-slot="2064264">
-    </ins>
-  </div>
-</div>
+<div id="toast-container" class="toast-container"></div>
 
 <script>
-  // Кнопка "Наверх"
-  var scrollTopBtn = document.getElementById('scrollTopBtn');
+/* ============ PWA: манифест через blob ============ */
+(function() {
+  const manifest = {
+    name: "FileDrop — Передача файлов",
+    short_name: "FileDrop",
+    description: "Передача файлов между устройствами по Wi-Fi",
+    start_url: location.pathname,
+    scope: location.pathname.replace(/\/[^/]*$/, '/'),
+    display: "standalone",
+    orientation: "portrait",
+    background_color: "#0c0c0f",
+    theme_color: "#0c0c0f",
+    lang: "ru",
+    icons: [
+      { src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMGMwYzBmIi8+PHBhdGggZD0iTTYwIDUwIEgxMjAgTDE0MCA3MCBWMTMwIEg2MCBaIiBmaWxsPSIjYTc4YmZhIi8+PHRleHQgeD0iOTAiIHk9IjExMCIgZm9udC1zaXplPSI0MCIgZmlsbD0iIzBjMGMwZiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RjwvdGV4dD48L3N2Zz4=", sizes: "192x192", type: "image/svg+xml", purpose: "any" },
+      { src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMGMwYzBmIi8+PHBhdGggZD0iTTYwIDUwIEgxMjAgTDE0MCA3MCBWMTMwIEg2MCBaIiBmaWxsPSIjYTc4YmZhIi8+PHRleHQgeD0iOTAiIHk9IjExMCIgZm9udC1zaXplPSI0MCIgZmlsbD0iIzBjMGMwZiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RjwvdGV4dD48L3N2Zz4=", sizes: "512x512", type: "image/svg+xml", purpose: "any" }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = url;
+  document.head.appendChild(link);
+})();
 
-  window.addEventListener('scroll', function() {
-    if (window.pageYOffset > 400) {
-      scrollTopBtn.classList.add('visible');
-    } else {
-      scrollTopBtn.classList.remove('visible');
-    }
+/* ============ UI ============ */
+function initTheme() {
+  const saved = localStorage.getItem('filedrop-theme');
+  const theme = saved || 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeIcon(theme); updateThemeColorMeta(theme);
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('filedrop-theme', next);
+  updateThemeIcon(next); updateThemeColorMeta(next);
+}
+function updateThemeIcon(theme) {
+  document.querySelectorAll('#theme-toggle .theme-icon').forEach(el => {
+    el.textContent = theme === 'dark' ? '🌙' : '☀️';
   });
+}
+function updateThemeColorMeta(theme) {
+  const color = theme === 'dark' ? '#0c0c0f' : '#fafafa';
+  let meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) { meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.appendChild(meta); }
+  meta.content = color;
+}
+function showToast(message, type = 'info', duration = 3000) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.3s'; toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+function showStep(screenPrefix, stepId) {
+  const screen = document.getElementById('screen-' + screenPrefix);
+  if (!screen) return;
+  screen.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById(stepId);
+  if (target) target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function formatSize(bytes) {
+  if (!bytes || bytes === 0) return '0 Б';
+  const k = 1024; const sizes = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+function formatSpeed(bps) {
+  if (!bps || bps < 1) return '';
+  if (bps < 1024) return `${bps.toFixed(0)} Б/с`;
+  if (bps < 1024 * 1024) return `${(bps / 1024).toFixed(1)} КБ/с`;
+  return `${(bps / (1024 * 1024)).toFixed(1)} МБ/с`;
+}
+function escapeHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+const SCREEN_TITLES = { home: 'FileDrop by AxKuon', send: 'Отправить файл', receive: 'Получить файл' };
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById('screen-' + name);
+  if (target) target.classList.add('active');
+  const titleEl = document.getElementById('page-title');
+  if (name === 'home') titleEl.innerHTML = 'FileDrop <span>by AxKuon</span>';
+  else titleEl.textContent = SCREEN_TITLES[name] || 'FileDrop';
+  document.getElementById('back-btn').style.display = (name === 'home') ? 'none' : 'inline-block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-  scrollTopBtn.addEventListener('click', function() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+/* ============ Base64 ============ */
+function encodeCode(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function decodeCode(b64) {
+  try { return decodeURIComponent(escape(atob(b64))); }
+  catch (e) { return null; }
+}
 
-  // Счётчики скачиваний — суммируем ВСЕ .exe и ВСЕ .apk
-  async function loadDownloadCounts() {
-    const owner = 'Nekeos';
-    const repo = 'FileDrop';
-
-    try {
-      const counts = { exe: 0, apk: 0 };
-      let page = 1;
-
-      while (true) {
-        const response = await fetch(
-          `https://api.github.com/repos/${owner}/${repo}/releases?per_page=100&page=${page}`
-        );
-        const releases = await response.json();
-
-        if (!Array.isArray(releases) || releases.length === 0) break;
-
-        releases.forEach(release => {
-          if (!release.assets) return;
-          release.assets.forEach(asset => {
-            const name = asset.name.toLowerCase();
-            if (name.endsWith('.exe')) {
-              counts.exe += asset.download_count;
-            } else if (name.endsWith('.apk')) {
-              counts.apk += asset.download_count;
-            }
-          });
-        });
-
-        if (releases.length < 100) break;
-        page++;
-      }
-
-      document.querySelectorAll('[data-file]').forEach(el => {
-        const type = el.dataset.file;
-        if (counts[type] !== undefined) {
-          el.textContent = `↓ ${counts[type]} скачиваний`;
-        } else {
-          el.textContent = '—';
-        }
-      });
-
-      console.log('[Downloads] EXE:', counts.exe, '| APK:', counts.apk);
-
-    } catch (e) {
-      console.error('Не удалось загрузить счётчики:', e);
-      document.querySelectorAll('.download-count').forEach(el => {
-        el.textContent = '—';
-      });
+/* ============ QR-генератор (qrcode-generator) ============ */
+(function(global){
+  'use strict';
+  var QRMath = (function(){
+    var EXP_TABLE = new Array(256); var LOG_TABLE = new Array(256);
+    for (var i = 0; i < 8; i++) EXP_TABLE[i] = 1 << i;
+    for (var i = 8; i < 256; i++) EXP_TABLE[i] = EXP_TABLE[i-4]^EXP_TABLE[i-5]^EXP_TABLE[i-6]^EXP_TABLE[i-8];
+    for (var i = 0; i < 255; i++) LOG_TABLE[EXP_TABLE[i]] = i;
+    return {
+      glog: function(n){ if (n < 1) throw new Error('glog'); return LOG_TABLE[n]; },
+      gexp: function(n){ while (n < 0) n += 255; while (n >= 256) n -= 255; return EXP_TABLE[n]; }
+    };
+  })();
+  function QRPolynomial(num, shift){
+    var offset = 0; while (offset < num.length && num[offset] === 0) offset++;
+    this.num = new Array(num.length - offset + shift);
+    for (var i = 0; i < num.length - offset; i++) this.num[i] = num[i + offset];
+  }
+  QRPolynomial.prototype.get = function(i){ return this.num[i]; };
+  QRPolynomial.prototype.getLength = function(){ return this.num.length; };
+  QRPolynomial.prototype.multiply = function(e){
+    var num = new Array(this.getLength() + e.getLength() - 1);
+    for (var i = 0; i < this.getLength(); i++)
+      for (var j = 0; j < e.getLength(); j++)
+        num[i+j] ^= QRMath.gexp(QRMath.glog(this.get(i)) + QRMath.glog(e.get(j)));
+    return new QRPolynomial(num, 0);
+  };
+  QRPolynomial.prototype.mod = function(e){
+    if (this.getLength() - e.getLength() < 0) return this;
+    var ratio = QRMath.glog(this.get(0)) - QRMath.glog(e.get(0));
+    var num = this.num.slice();
+    for (var i = 0; i < e.getLength(); i++) num[i] ^= QRMath.gexp(QRMath.glog(e.get(i)) + ratio);
+    return new QRPolynomial(num, 0).mod(e);
+  };
+  var RS_BLOCK_TABLE = [
+    [1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],
+    [1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],
+    [1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],
+    [2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],
+    [4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],
+    [2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],
+    [4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],
+    [4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],
+    [11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],
+    [5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],
+    [1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],
+    [3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],
+    [15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],
+    [2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],
+    [11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],
+    [8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],
+    [28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],
+    [3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],
+    [1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],
+    [13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],
+    [10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],
+    [13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],
+    [39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],
+    [17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],
+    [48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],
+    [19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]
+  ];
+  function getRsBlockTable(typeNumber, ecLevel){
+    switch (ecLevel) {
+      case 1: return RS_BLOCK_TABLE[(typeNumber-1)*4+0];
+      case 0: return RS_BLOCK_TABLE[(typeNumber-1)*4+1];
+      case 3: return RS_BLOCK_TABLE[(typeNumber-1)*4+2];
+      case 2: return RS_BLOCK_TABLE[(typeNumber-1)*4+3];
     }
   }
+  function getRSBlocks(typeNumber, ecLevel){
+    var rsBlock = getRsBlockTable(typeNumber, ecLevel);
+    if (!rsBlock) throw new Error('bad rs block');
+    var list = [];
+    for (var i = 0; i < rsBlock.length; i += 3)
+      for (var j = 0; j < rsBlock[i]; j++)
+        list.push({ totalCount: rsBlock[i+1], dataCount: rsBlock[i+2] });
+    return list;
+  }
+  function QRBitBuffer(){ this.buffer = []; this.length = 0; }
+  QRBitBuffer.prototype.put = function(num, length){
+    for (var i = 0; i < length; i++) this.putBit(((num >>> (length-i-1)) & 1) === 1);
+  };
+  QRBitBuffer.prototype.getLengthInBits = function(){ return this.length; };
+  QRBitBuffer.prototype.putBit = function(bit){
+    var bufIndex = Math.floor(this.length / 8);
+    if (this.buffer.length <= bufIndex) this.buffer.push(0);
+    if (bit) this.buffer[bufIndex] |= (0x80 >>> (this.length % 8));
+    this.length++;
+  };
+  function QR8bitByte(data){
+    this.mode = 4; this.data = data; this.parsedData = [];
+    for (var i = 0; i < data.length; i++) {
+      var code = data.charCodeAt(i); var ba = [];
+      if (code > 0x10000) {
+        ba[0] = 0xF0 | ((code & 0x1C0000) >>> 18);
+        ba[1] = 0x80 | ((code & 0x3F000) >>> 12);
+        ba[2] = 0x80 | ((code & 0xFC0) >>> 6);
+        ba[3] = 0x80 | (code & 0x3F);
+      } else if (code > 0x800) {
+        ba[0] = 0xE0 | ((code & 0xF000) >>> 12);
+        ba[1] = 0x80 | ((code & 0xFC0) >>> 6);
+        ba[2] = 0x80 | (code & 0x3F);
+      } else if (code > 0x80) {
+        ba[0] = 0xC0 | ((code & 0x7C0) >>> 6);
+        ba[1] = 0x80 | (code & 0x3F);
+      } else { ba[0] = code; }
+      this.parsedData.push(ba);
+    }
+    this.parsedData = Array.prototype.concat.apply([], this.parsedData);
+    if (this.parsedData.length !== data.length) {
+      this.parsedData.unshift(191); this.parsedData.unshift(187); this.parsedData.unshift(239);
+    }
+  }
+  QR8bitByte.prototype.getLength = function(){ return this.parsedData.length; };
+  QR8bitByte.prototype.write = function(buffer){
+    for (var i = 0; i < this.parsedData.length; i++) buffer.put(this.parsedData[i], 8);
+  };
+  var PATTERN_POSITION_TABLE = [
+    [],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],
+    [6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],
+    [6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],
+    [6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],
+    [6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],
+    [6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]
+  ];
+  var G15 = (1<<10)|(1<<8)|(1<<5)|(1<<4)|(1<<2)|(1<<1)|1;
+  var G18 = (1<<12)|(1<<11)|(1<<10)|(1<<9)|(1<<8)|(1<<5)|(1<<2)|1;
+  var G15_MASK = (1<<14)|(1<<12)|(1<<10)|(1<<4)|(1<<1);
+  function getBCHDigit(data){ var d = 0; while (data !== 0) { d++; data >>>= 1; } return d; }
+  function getBCHTypeInfo(data){
+    var d = data << 10;
+    while (getBCHDigit(d) - getBCHDigit(G15) >= 0) d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15)));
+    return ((data << 10) | d) ^ G15_MASK;
+  }
+  function getBCHTypeNumber(data){
+    var d = data << 12;
+    while (getBCHDigit(d) - getBCHDigit(G18) >= 0) d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18)));
+    return (data << 12) | d;
+  }
+  function getMask(mp, i, j){
+    switch (mp) {
+      case 0: return (i + j) % 2 === 0;
+      case 1: return i % 2 === 0;
+      case 2: return j % 3 === 0;
+      case 3: return (i + j) % 3 === 0;
+      case 4: return (Math.floor(i/2) + Math.floor(j/3)) % 2 === 0;
+      case 5: return (i*j) % 2 + (i*j) % 3 === 0;
+      case 6: return ((i*j) % 2 + (i*j) % 3) % 2 === 0;
+      case 7: return ((i*j) % 3 + (i+j) % 2) % 2 === 0;
+    }
+  }
+  function getErrorCorrectPolynomial(len){
+    var a = new QRPolynomial([1], 0);
+    for (var i = 0; i < len; i++) a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0));
+    return a;
+  }
+  function getLengthInBits(mode, type){
+    if (1 <= type && type < 10) return 8;
+    if (type < 41) return 16;
+    throw new Error('bad length');
+  }
+  function getLostPoint(qr){
+    var mc = qr.getModuleCount(), lp = 0;
+    for (var row = 0; row < mc; row++) {
+      for (var col = 0; col < mc; col++) {
+        var sameCount = 0, dark = qr.isDark(row, col);
+        for (var r = -1; r <= 1; r++) {
+          if (row + r < 0 || mc <= row + r) continue;
+          for (var c = -1; c <= 1; c++) {
+            if (col + c < 0 || mc <= col + c) continue;
+            if (r === 0 && c === 0) continue;
+            if (dark === qr.isDark(row + r, col + c)) sameCount++;
+          }
+        }
+        if (sameCount > 5) lp += (3 + sameCount - 5);
+      }
+    }
+    for (var row = 0; row < mc - 1; row++) {
+      for (var col = 0; col < mc - 1; col++) {
+        var count = 0;
+        if (qr.isDark(row, col)) count++;
+        if (qr.isDark(row+1, col)) count++;
+        if (qr.isDark(row, col+1)) count++;
+        if (qr.isDark(row+1, col+1)) count++;
+        if (count === 0 || count === 4) lp += 3;
+      }
+    }
+    for (var row = 0; row < mc; row++) {
+      for (var col = 0; col < mc - 6; col++) {
+        if (qr.isDark(row, col) && !qr.isDark(row, col+1) && qr.isDark(row, col+2) &&
+            qr.isDark(row, col+3) && qr.isDark(row, col+4) && !qr.isDark(row, col+5) &&
+            qr.isDark(row, col+6)) lp += 40;
+      }
+    }
+    for (var col = 0; col < mc; col++) {
+      for (var row = 0; row < mc - 6; row++) {
+        if (qr.isDark(row, col) && !qr.isDark(row+1, col) && qr.isDark(row+2, col) &&
+            qr.isDark(row+3, col) && qr.isDark(row+4, col) && !qr.isDark(row+5, col) &&
+            qr.isDark(row+6, col)) lp += 40;
+      }
+    }
+    var darkCount = 0;
+    for (var col = 0; col < mc; col++)
+      for (var row = 0; row < mc; row++)
+        if (qr.isDark(row, col)) darkCount++;
+    lp += Math.abs(100 * darkCount / mc / mc - 50) / 5 * 10;
+    return lp;
+  }
+  function QRCodeModel(typeNumber, ecLevel){
+    this.typeNumber = typeNumber; this.errorCorrectLevel = ecLevel;
+    this.modules = null; this.moduleCount = 0; this.dataCache = null; this.dataList = [];
+  }
+  QRCodeModel.prototype = {
+    addData: function(data){ this.dataList.push(new QR8bitByte(data)); this.dataCache = null; },
+    isDark: function(row, col){ return this.modules[row][col]; },
+    getModuleCount: function(){ return this.moduleCount; },
+    make: function(){ this.makeImpl(false, this.getBestMaskPattern()); },
+    makeImpl: function(test, mp){
+      this.moduleCount = this.typeNumber * 4 + 17;
+      this.modules = new Array(this.moduleCount);
+      for (var row = 0; row < this.moduleCount; row++) {
+        this.modules[row] = new Array(this.moduleCount);
+        for (var col = 0; col < this.moduleCount; col++) this.modules[row][col] = null;
+      }
+      this.setupPositionProbePattern(0, 0);
+      this.setupPositionProbePattern(this.moduleCount - 7, 0);
+      this.setupPositionProbePattern(0, this.moduleCount - 7);
+      this.setupPositionAdjustPattern();
+      this.setupTimingPattern();
+      this.setupTypeInfo(test, mp);
+      if (this.typeNumber >= 7) this.setupTypeNumber(test);
+      if (this.dataCache == null)
+        this.dataCache = QRCodeModel.createData(this.typeNumber, this.errorCorrectLevel, this.dataList);
+      this.mapData(this.dataCache, mp);
+    },
+    setupPositionProbePattern: function(row, col){
+      for (var r = -1; r <= 7; r++) {
+        if (row + r <= -1 || this.moduleCount <= row + r) continue;
+        for (var c = -1; c <= 7; c++) {
+          if (col + c <= -1 || this.moduleCount <= col + c) continue;
+          if ((0 <= r && r <= 6 && (c === 0 || c === 6)) ||
+              (0 <= c && c <= 6 && (r === 0 || r === 6)) ||
+              (2 <= r && r <= 4 && 2 <= c && c <= 4)) {
+            this.modules[row+r][col+c] = true;
+          } else { this.modules[row+r][col+c] = false; }
+        }
+      }
+    },
+    getBestMaskPattern: function(){
+      var minLp = 0, pattern = 0;
+      for (var i = 0; i < 8; i++) {
+        this.makeImpl(true, i);
+        var lp = getLostPoint(this);
+        if (i === 0 || minLp > lp) { minLp = lp; pattern = i; }
+      }
+      return pattern;
+    },
+    setupTimingPattern: function(){
+      for (var r = 8; r < this.moduleCount - 8; r++) {
+        if (this.modules[r][6] != null) continue;
+        this.modules[r][6] = (r % 2 === 0);
+      }
+      for (var c = 8; c < this.moduleCount - 8; c++) {
+        if (this.modules[6][c] != null) continue;
+        this.modules[6][c] = (c % 2 === 0);
+      }
+    },
+    setupPositionAdjustPattern: function(){
+      var pos = PATTERN_POSITION_TABLE[this.typeNumber - 1];
+      for (var i = 0; i < pos.length; i++) {
+        for (var j = 0; j < pos.length; j++) {
+          var row = pos[i], col = pos[j];
+          if (this.modules[row][col] != null) continue;
+          for (var r = -2; r <= 2; r++) {
+            for (var c = -2; c <= 2; c++) {
+              if (r === -2 || r === 2 || c === -2 || c === 2 || (r === 0 && c === 0))
+                this.modules[row+r][col+c] = true;
+              else this.modules[row+r][col+c] = false;
+            }
+          }
+        }
+      }
+    },
+    setupTypeNumber: function(test){
+      var bits = getBCHTypeNumber(this.typeNumber);
+      for (var i = 0; i < 18; i++) {
+        var mod = (!test && ((bits >> i) & 1) === 1);
+        this.modules[Math.floor(i/3)][i%3 + this.moduleCount - 8 - 3] = mod;
+      }
+      for (var i = 0; i < 18; i++) {
+        var mod = (!test && ((bits >> i) & 1) === 1);
+        this.modules[i%3 + this.moduleCount - 8 - 3][Math.floor(i/3)] = mod;
+      }
+    },
+    setupTypeInfo: function(test, mp){
+      var data = (this.errorCorrectLevel << 3) | mp;
+      var bits = getBCHTypeInfo(data);
+      for (var i = 0; i < 15; i++) {
+        var mod = (!test && ((bits >> i) & 1) === 1);
+        if (i < 6) this.modules[i][8] = mod;
+        else if (i < 8) this.modules[i+1][8] = mod;
+        else this.modules[this.moduleCount - 15 + i][8] = mod;
+      }
+      for (var i = 0; i < 15; i++) {
+        var mod = (!test && ((bits >> i) & 1) === 1);
+        if (i < 8) this.modules[8][this.moduleCount - i - 1] = mod;
+        else if (i < 9) this.modules[8][15 - i - 1 + 1] = mod;
+        else this.modules[8][15 - i - 1] = mod;
+      }
+      this.modules[this.moduleCount - 8][8] = (!test);
+    },
+    mapData: function(data, mp){
+      var inc = -1, row = this.moduleCount - 1, bitIndex = 7, byteIndex = 0;
+      for (var col = this.moduleCount - 1; col > 0; col -= 2) {
+        if (col === 6) col--;
+        while (true) {
+          for (var c = 0; c < 2; c++) {
+            if (this.modules[row][col - c] == null) {
+              var dark = false;
+              if (byteIndex < data.length) dark = (((data[byteIndex] >>> bitIndex) & 1) === 1);
+              if (getMask(mp, row, col - c)) dark = !dark;
+              this.modules[row][col - c] = dark;
+              bitIndex--;
+              if (bitIndex === -1) { byteIndex++; bitIndex = 7; }
+            }
+          }
+          row += inc;
+          if (row < 0 || this.moduleCount <= row) { row -= inc; inc = -inc; break; }
+        }
+      }
+    }
+  };
+  QRCodeModel.PAD0 = 0xEC; QRCodeModel.PAD1 = 0x11;
+  QRCodeModel.createData = function(typeNumber, ecLevel, dataList){
+    var rsBlocks = getRSBlocks(typeNumber, ecLevel);
+    var buffer = new QRBitBuffer();
+    for (var i = 0; i < dataList.length; i++) {
+      var data = dataList[i];
+      buffer.put(data.mode, 4);
+      buffer.put(data.getLength(), getLengthInBits(data.mode, typeNumber));
+      data.write(buffer);
+    }
+    var totalDataCount = 0;
+    for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
+    if (buffer.getLengthInBits() > totalDataCount * 8) throw new Error('code length overflow');
+    if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) buffer.put(0, 4);
+    while (buffer.getLengthInBits() % 8 !== 0) buffer.putBit(false);
+    while (true) {
+      if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+      buffer.put(QRCodeModel.PAD0, 8);
+      if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+      buffer.put(QRCodeModel.PAD1, 8);
+    }
+    return QRCodeModel.createBytes(buffer, rsBlocks);
+  };
+  QRCodeModel.createBytes = function(buffer, rsBlocks){
+    var offset = 0, maxDcCount = 0, maxEcCount = 0;
+    var dcdata = new Array(rsBlocks.length);
+    var ecdata = new Array(rsBlocks.length);
+    for (var r = 0; r < rsBlocks.length; r++) {
+      var dcCount = rsBlocks[r].dataCount;
+      var ecCount = rsBlocks[r].totalCount - dcCount;
+      maxDcCount = Math.max(maxDcCount, dcCount);
+      maxEcCount = Math.max(maxEcCount, ecCount);
+      dcdata[r] = new Array(dcCount);
+      for (var i = 0; i < dcdata[r].length; i++) dcdata[r][i] = 0xff & buffer.buffer[i + offset];
+      offset += dcCount;
+      var rsPoly = getErrorCorrectPolynomial(ecCount);
+      var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
+      var modPoly = rawPoly.mod(rsPoly);
+      ecdata[r] = new Array(rsPoly.getLength() - 1);
+      for (var i = 0; i < ecdata[r].length; i++) {
+        var modIndex = i + modPoly.getLength() - ecdata[r].length;
+        ecdata[r][i] = (modIndex >= 0) ? modPoly.get(modIndex) : 0;
+      }
+    }
+    var totalCodeCount = 0;
+    for (var i = 0; i < rsBlocks.length; i++) totalCodeCount += rsBlocks[i].totalCount;
+    var data = new Array(totalCodeCount), index = 0;
+    for (var i = 0; i < maxDcCount; i++)
+      for (var r = 0; r < rsBlocks.length; r++)
+        if (i < dcdata[r].length) data[index++] = dcdata[r][i];
+    for (var i = 0; i < maxEcCount; i++)
+      for (var r = 0; r < rsBlocks.length; r++)
+        if (i < ecdata[r].length) data[index++] = ecdata[r][i];
+    return data;
+  };
+  var EC_LEVEL = { L: 1, M: 0, Q: 3, H: 2 };
+  function QRCodeGen(typeNumber, ecLevel){
+    this._qr = new QRCodeModel(typeNumber, EC_LEVEL[ecLevel]);
+  }
+  QRCodeGen.prototype.addData = function(data){ this._qr.addData(data); };
+  QRCodeGen.prototype.make = function(){ this._qr.make(); };
+  QRCodeGen.prototype.getModuleCount = function(){ return this._qr.getModuleCount(); };
+  QRCodeGen.prototype.isDark = function(row, col){ return this._qr.isDark(row, col); };
+  function getTypeNumber(text, ecLevel){
+    for (var t = 1; t <= 40; t++) {
+      try {
+        var qr = new QRCodeGen(t, ecLevel);
+        qr.addData(text); qr.make(); return t;
+      } catch (e) {}
+    }
+    throw new Error('Данные слишком длинные для QR');
+  }
+  global.MiniQR = {
+    render: function(canvas, text, opts){
+      opts = opts || {};
+      var ecLevel = opts.errorCorrectLevel || 'L';
+      var targetSize = opts.size || 600;
+      var margin = opts.margin != null ? opts.margin : 2;
+      var typeNumber = getTypeNumber(text, ecLevel);
+      var qr = new QRCodeGen(typeNumber, ecLevel);
+      qr.addData(text); qr.make();
+      var count = qr.getModuleCount();
+      var totalModules = count + margin * 2;
+      var cellSize = Math.max(1, Math.floor(targetSize / totalModules));
+      var realSize = cellSize * totalModules;
+      canvas.width = realSize; canvas.height = realSize;
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, realSize, realSize);
+      ctx.fillStyle = '#000000';
+      for (var r = 0; r < count; r++)
+        for (var c = 0; c < count; c++)
+          if (qr.isDark(r, c))
+            ctx.fillRect((c + margin) * cellSize, (r + margin) * cellSize, cellSize, cellSize);
+      return { typeNumber: typeNumber, modules: count };
+    }
+  };
+})(window);
 
-  document.addEventListener('DOMContentLoaded', loadDownloadCounts);
+async function drawQR(canvas, text, wrapEl) {
+  if (!canvas) return false;
+  try {
+    const result = MiniQR.render(canvas, text, { errorCorrectLevel: 'L', size: 600, margin: 2 });
+    return true;
+  } catch (err) {
+    if (wrapEl) wrapEl.innerHTML = '<div class="qr-placeholder">Ошибка QR.<br>' + escapeHtml(err.message||'') + '</div>';
+    showToast('Ошибка QR: ' + (err.message || ''), 'error', 5000);
+    return false;
+  }
+}
+
+function showCameraError(wrapId, title, message, hint) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  wrap.innerHTML = `<div class="camera-error"><div class="icon">📷</div>
+    <div class="msg"><strong>${escapeHtml(title)}</strong><br>${escapeHtml(message)}</div>
+    <div class="hint">${hint || ''}</div></div>`;
+}
+
+function startQRScanner(video, canvas, onResult, wrapId) {
+  if (typeof jsQR === 'undefined') {
+    showCameraError(wrapId, 'Нет интернета', 'Библиотека сканера не загрузилась.', '');
+    return () => {};
+  }
+  const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if (!isSecure) {
+    showCameraError(wrapId, 'Нужен HTTPS', 'Браузер запрещает доступ к камере без HTTPS.', '');
+    return () => {};
+  }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showCameraError(wrapId, 'Браузер не поддерживает', 'Нет доступа к камере.', '');
+    return () => {};
+  }
+  let stream = null; let rafId = null; let stopped = false;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  async function start() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+    } catch (err) {
+      const name = err.name || '';
+      if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+        showCameraError(wrapId, 'Нет доступа к камере', 'Вы запретили доступ к камере.',
+          'Разрешите доступ в настройках браузера.');
+      } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+        showCameraError(wrapId, 'Камера не найдена', 'На устройстве нет камеры.', '');
+      } else if (name === 'NotReadableError' || name === 'TrackStartError') {
+        showCameraError(wrapId, 'Камера занята', 'Другое приложение использует камеру.', '');
+      } else if (name === 'OverconstrainedError') {
+        try { stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); }
+        catch (err2) { showCameraError(wrapId, 'Ошибка камеры', err2.message || String(err2), ''); return; }
+      } else {
+        showCameraError(wrapId, 'Ошибка камеры', err.message || String(err), '');
+      }
+      if (!stream) return;
+    }
+    try {
+      video.srcObject = stream;
+      video.setAttribute('playsinline', 'true');
+      video.setAttribute('autoplay', 'true');
+      video.setAttribute('muted', 'true');
+      await video.play();
+    } catch (err) { showToast('Камера: ' + (err.message || ''), 'error', 5000); return; }
+    const tick = () => {
+      if (stopped) return;
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+        if (code && code.data) { onResult(code.data); stop(); return; }
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+  }
+  function stop() {
+    if (stopped) return;
+    stopped = true;
+    if (rafId) cancelAnimationFrame(rafId);
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    video.srcObject = null;
+  }
+  start();
+  return stop;
+}
+
+/* ============ WebRTC ============ */
+const RTC_CONFIG = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun.cloudflare.com:3478' }
+  ],
+  iceCandidatePoolSize: 10
+};
+function waitForIceComplete(pc, timeoutMs = 4000) {
+  return new Promise((resolve) => {
+    if (pc.iceGatheringState === 'complete') return resolve();
+    let done = false;
+    const finish = () => { if (done) return; done = true; pc.removeEventListener('icegatheringstatechange', onChange); resolve(); };
+    const onChange = () => { if (pc.iceGatheringState === 'complete') finish(); };
+    pc.addEventListener('icegatheringstatechange', onChange);
+    setTimeout(finish, timeoutMs);
+  });
+}
+function packSDP(sdp) {
+  const lines = sdp.split(/\r\n|\n/);
+  const out = { c: [] };
+  for (const line of lines) {
+    if (line.startsWith('a=ice-ufrag:')) out.u = line.slice(12);
+    else if (line.startsWith('a=ice-pwd:')) out.p = line.slice(10);
+    else if (line.startsWith('a=fingerprint:')) out.f = line.slice(14);
+    else if (line.startsWith('a=setup:')) out.s = line.slice(8);
+    else if (line.startsWith('a=candidate:')) {
+      let rest = line.slice(12);
+      if (rest.startsWith('candidate:')) rest = rest.slice(10);
+      const parts = rest.split(' ');
+      if (parts.length >= 8 && out.c.length < 6) out.c.push(parts.slice(0, 8).join(' '));
+    }
+  }
+  return out;
+}
+function unpackSDP(o) {
+  const lines = [
+    'v=0','o=- 0 0 IN IP4 127.0.0.1','s=-','t=0 0','a=group:BUNDLE 0','a=msid-semantic: WMS',
+    'm=application 9 UDP/DTLS/SCTP webrtc-datachannel','c=IN IP4 0.0.0.0',
+    'a=ice-ufrag:' + o.u,'a=ice-pwd:' + o.p,'a=ice-options:trickle',
+    'a=fingerprint:' + o.f,'a=setup:' + o.s,'a=mid:0','a=sctp-port:5000'
+  ];
+  for (const c of (o.c || [])) lines.splice(lines.length - 1, 0, 'a=candidate:candidate:' + c + ' generation 0');
+  return lines.join('\r\n') + '\r\n';
+}
+async function createOffer(onDataChannel) {
+  const pc = new RTCPeerConnection(RTC_CONFIG);
+  const dc = pc.createDataChannel('filedrop', { ordered: true });
+  if (typeof onDataChannel === 'function') onDataChannel(dc, pc);
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  await waitForIceComplete(pc, 4000);
+  const packed = { t: 'o', ...packSDP(pc.localDescription.sdp) };
+  return { pc, dc, json: JSON.stringify(packed) };
+}
+async function createAnswer(offerJson, onDataChannel) {
+  let packed;
+  try { packed = JSON.parse(offerJson); } catch (e) { throw new Error('QR повреждён'); }
+  if (packed.t !== 'o') throw new Error('Это не offer');
+  const pc = new RTCPeerConnection(RTC_CONFIG);
+  pc.ondatachannel = (event) => { if (typeof onDataChannel === 'function') onDataChannel(event.channel, pc); };
+  await pc.setRemoteDescription({ type: 'offer', sdp: unpackSDP(packed) });
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  await waitForIceComplete(pc, 4000);
+  const packedOut = { t: 'a', ...packSDP(pc.localDescription.sdp) };
+  return { pc, json: JSON.stringify(packedOut) };
+}
+async function applyAnswer(pc, answerJson) {
+  let packed;
+  try { packed = JSON.parse(answerJson); } catch (e) { throw new Error('Код повреждён'); }
+  if (packed.t !== 'a') throw new Error('Это не answer');
+  await pc.setRemoteDescription({ type: 'answer', sdp: unpackSDP(packed) });
+}
+
+/* ============ Передача ============ */
+const CHUNK_SIZE = 16 * 1024;
+const BUFFER_HIGH = 4 * 1024 * 1024;
+const BUFFER_LOW = 1 * 1024 * 1024;
+
+async function sendFiles(dc, files, ui = {}) {
+  const totalSize = files.reduce((s, f) => s + f.size, 0);
+  let sentTotal = 0;
+  let startTime = performance.now();
+  let lastTick = startTime, lastSent = 0, aborted = false;
+  const onClose = () => { aborted = true; };
+  const onError = () => { aborted = true; };
+  dc.addEventListener('close', onClose);
+  dc.addEventListener('error', onError);
+  const waitDrain = () => new Promise(resolve => {
+    if (dc.bufferedAmount < BUFFER_HIGH) return resolve();
+    let done = false;
+    const finish = () => { if (done) return; done = true; dc.removeEventListener('bufferedamountlow', check); resolve(); };
+    const check = () => { if (aborted || dc.bufferedAmount < BUFFER_LOW) finish(); };
+    dc.bufferedAmountLowThreshold = BUFFER_LOW;
+    dc.addEventListener('bufferedamountlow', check);
+    setTimeout(finish, 2000);
+  });
+  try {
+    dc.binaryType = 'arraybuffer';
+    dc.send(JSON.stringify({ kind: 'meta', total: totalSize, files: files.map(f => ({ name: f.name, size: f.size })) }));
+    for (let i = 0; i < files.length; i++) {
+      if (aborted) throw new Error('Соединение закрыто');
+      const file = files[i];
+      dc.send(JSON.stringify({ kind: 'file-start', index: i, name: file.name, size: file.size }));
+      let offset = 0;
+      while (offset < file.size) {
+        if (aborted) throw new Error('Соединение закрыто');
+        const slice = file.slice(offset, offset + CHUNK_SIZE);
+        const ab = await slice.arrayBuffer();
+        const bytes = new Uint8Array(ab);
+        try { dc.send(bytes); }
+        catch (sendErr) { await waitDrain(); if (aborted) throw new Error('Соединение закрыто'); dc.send(bytes); }
+        offset += bytes.byteLength; sentTotal += bytes.byteLength;
+        const now = performance.now();
+        if (now - lastTick > 200) {
+          const speed = (sentTotal - lastSent) / ((now - lastTick) / 1000);
+          lastTick = now; lastSent = sentTotal;
+          if (ui.onProgress) ui.onProgress(sentTotal, totalSize, speed);
+        }
+        if (dc.bufferedAmount > BUFFER_HIGH) await waitDrain();
+        if ((offset / CHUNK_SIZE) % 32 === 0) await new Promise(r => setTimeout(r, 0));
+      }
+      dc.send(JSON.stringify({ kind: 'file-end', index: i }));
+    }
+    dc.send(JSON.stringify({ kind: 'done' }));
+    if (ui.onProgress) { const elapsed = (performance.now() - startTime) / 1000; ui.onProgress(totalSize, totalSize, totalSize / Math.max(elapsed, 0.001)); }
+    if (ui.onDone) ui.onDone();
+  } catch (err) { if (ui.onError) ui.onError(err); }
+  finally { dc.removeEventListener('close', onClose); dc.removeEventListener('error', onError); }
+}
+
+function receiveFiles(dc, ui = {}) {
+  dc.binaryType = 'arraybuffer';
+  let meta = null, currentFile = null, receivedTotal = 0;
+  const received = [];
+  let lastTick = performance.now(), lastReceived = 0;
+  dc.addEventListener('message', (event) => {
+    const data = event.data;
+    if (typeof data === 'string') {
+      let msg; try { msg = JSON.parse(data); } catch { return; }
+      if (msg.kind === 'meta') { meta = msg; if (ui.onMeta) ui.onMeta(msg.files, msg.total); }
+      else if (msg.kind === 'file-start') currentFile = { name: msg.name, size: msg.size, index: msg.index, chunks: [] };
+      else if (msg.kind === 'file-end') {
+        if (currentFile) {
+          const blob = new Blob(currentFile.chunks);
+          const file = new File([blob], currentFile.name, { type: 'application/octet-stream' });
+          received.push(file); if (ui.onFile) ui.onFile(file); currentFile = null;
+        }
+      } else if (msg.kind === 'done') { if (ui.onDone) ui.onDone(received); }
+      return;
+    }
+    if (data instanceof ArrayBuffer && currentFile) { currentFile.chunks.push(data); receivedTotal += data.byteLength; }
+    else if (data instanceof Blob && currentFile) { currentFile.chunks.push(data); receivedTotal += data.size; }
+    else return;
+    const now = performance.now();
+    if (now - lastTick > 200) {
+      const speed = (receivedTotal - lastReceived) / ((now - lastTick) / 1000);
+      lastTick = now; lastReceived = receivedTotal;
+      if (ui.onProgress) ui.onProgress(receivedTotal, meta ? meta.total : 0, speed);
+    }
+  });
+  dc.addEventListener('error', (e) => { if (ui.onError) ui.onError(e); });
+}
+
+/* ============ Drop zone ============ */
+function initDropZone(opts = {}) {
+  const dropZone = document.getElementById('drop-zone');
+  if (!dropZone) return;
+  if (dropZone.dataset.inited === '1') return;
+  dropZone.dataset.inited = '1';
+  const renderFiles = (files) => {
+    const plus = dropZone.querySelector('.plus');
+    const title = dropZone.querySelector('.drop-title');
+    const hint = dropZone.querySelector('.drop-hint');
+    let list = dropZone.querySelector('.file-list');
+    if (!files || !files.length) {
+      dropZone.classList.remove('has-files');
+      if (plus) plus.style.display = '';
+      if (title) title.textContent = 'Выбрать файл';
+      if (hint) hint.textContent = 'Перетащите или выберите из хранилища';
+      if (list) list.remove();
+      return;
+    }
+    dropZone.classList.add('has-files');
+    if (plus) plus.style.display = 'none';
+    const total = Array.from(files).reduce((s, f) => s + f.size, 0);
+    if (title) title.textContent = `Выбрано файлов: ${files.length}`;
+    if (hint) hint.textContent = `Общий размер: ${formatSize(total)}`;
+    if (!list) { list = document.createElement('div'); list.className = 'file-list'; dropZone.appendChild(list); }
+    list.innerHTML = Array.from(files).map(f => `<div class="file-item"><span class="file-name">${escapeHtml(f.name)}</span><span class="file-size">${formatSize(f.size)}</span></div>`).join('');
+  };
+  const currentInput = () => document.getElementById('file-input');
+  dropZone.addEventListener('click', (e) => {
+    if (e.target.closest('button, a')) return;
+    if (e.target.closest('.file-list')) return;
+    const inp = currentInput(); if (inp) inp.click();
+  });
+  dropZone.addEventListener('change', (e) => {
+    if (e.target && e.target.id === 'file-input') {
+      const files = Array.from(e.target.files || []);
+      renderFiles(files);
+      if (files.length && typeof opts.onFiles === 'function') opts.onFiles(files);
+    }
+  });
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault(); dropZone.classList.remove('dragover');
+    const dt = e.dataTransfer;
+    if (!dt || !dt.files || !dt.files.length) return;
+    const files = Array.from(dt.files);
+    const inp = currentInput();
+    if (inp) { try { const dtx = new DataTransfer(); files.forEach(f => dtx.items.add(f)); inp.files = dtx.files; } catch (_) {} }
+    renderFiles(files);
+    if (typeof opts.onFiles === 'function') opts.onFiles(files);
+  });
+}
+
+/* ============ ОТПРАВИТЕЛЬ ============ */
+const sendState = { files: [], pc: null, dc: null, stopScanner: null, transferStarted: false, answerCode: '' };
+
+function initSender() {
+  initDropZone({
+    onFiles: (selected) => {
+      if (sendState.stopScanner || sendState.transferStarted) return;
+      sendState.files = selected;
+      if (sendState.files.length) startScanningReceiver();
+    }
+  });
+
+  document.getElementById('btn-send-cancel-scan').addEventListener('click', () => {
+    if (sendState.stopScanner) sendState.stopScanner();
+    sendState.stopScanner = null;
+    showStep('send', 'send-step-select');
+  });
+
+  document.getElementById('btn-apply-offer').addEventListener('click', () => {
+    const val = document.getElementById('offer-code-input').value.trim();
+    if (!val) { showToast('Вставьте код получателя', 'error'); return; }
+    if (sendState.stopScanner) { sendState.stopScanner(); sendState.stopScanner = null; }
+    handleOfferCode(val);
+  });
+
+  document.getElementById('btn-share-link').addEventListener('click', async () => {
+    const code = sendState.answerCode;
+    if (!code) { showToast('Сначала создайте answer', 'error'); return; }
+    const url = location.origin + location.pathname + '#answer=' + encodeURIComponent(code);
+    const shareData = { title: 'FileDrop — код подключения', text: 'Открой эту ссылку, чтобы принять файл:', url: url };
+    try {
+      if (navigator.share) await navigator.share(shareData);
+      else { await navigator.clipboard.writeText(url); showToast('Ссылка скопирована', 'success'); }
+    } catch (e) { console.log('Share cancelled', e); }
+  });
+
+  document.getElementById('btn-copy-answer').addEventListener('click', async () => {
+    const inp = document.getElementById('answer-code-output');
+    try { await navigator.clipboard.writeText(inp.value); showToast('Код скопирован', 'success'); }
+    catch { inp.select(); document.execCommand('copy'); showToast('Код скопирован', 'success'); }
+  });
+
+  document.getElementById('btn-send-home').addEventListener('click', () => { resetSend(); showScreen('home'); });
+}
+
+function startScanningReceiver() {
+  showStep('send', 'send-step-scan');
+  const video = document.getElementById('send-scanner-video');
+  const canvas = document.getElementById('send-scanner-canvas');
+  sendState.stopScanner = startQRScanner(video, canvas, async (scannedText) => {
+    sendState.stopScanner = null;
+    let offerJson = scannedText;
+    if (!scannedText.trim().startsWith('{')) {
+      const decoded = decodeCode(scannedText);
+      if (decoded) offerJson = decoded;
+    }
+    handleOfferCode(offerJson);
+  }, 'send-scanner-wrap');
+}
+
+async function handleOfferCode(offerJson) {
+  try {
+    const result = await createAnswer(offerJson, (channel, connection) => {
+      sendState.dc = channel; sendState.pc = connection;
+      setupSenderChannel(channel);
+    });
+    sendState.pc = result.pc;
+    const answerCode = encodeCode(result.json);
+    sendState.answerCode = answerCode;
+    document.getElementById('answer-code-output').value = answerCode;
+    showToast('Код готов — отправьте его получателю', 'success');
+    showStep('send', 'send-step-show-answer');
+    document.getElementById('send-file-list').textContent = `${sendState.files.length} файл(ов), ${formatSize(sendState.files.reduce((s,f) => s+f.size, 0))}`;
+    sendState.pc.addEventListener('connectionstatechange', () => {
+      const s = sendState.pc.connectionState;
+      if (s === 'failed') { showToast('Соединение потеряно', 'error'); try { sendState.dc && sendState.dc.close(); } catch {} }
+    });
+  } catch (err) {
+    showToast('Неверный код получателя: ' + err.message, 'error', 5000);
+    showStep('send', 'send-step-select');
+  }
+}
+
+function setupSenderChannel(channel) {
+  channel.binaryType = 'arraybuffer';
+  channel.addEventListener('open', async () => {
+    if (sendState.transferStarted) return;
+    sendState.transferStarted = true;
+    showToast('Соединение установлено', 'success');
+    await beginTransfer();
+  });
+}
+
+async function beginTransfer() {
+  const files = sendState.files;
+  const totalSize = files.reduce((s, f) => s + f.size, 0);
+  const fill = document.getElementById('send-progress-fill');
+  const text = document.getElementById('send-progress-text');
+  const speed = document.getElementById('send-speed-text');
+  try { sendState.dc.binaryType = 'arraybuffer'; } catch {}
+  text.textContent = 'Передача...';
+  try {
+    await sendFiles(sendState.dc, files, {
+      onProgress: (sent, total, sp) => {
+        const percent = total ? (sent / total) * 100 : 0;
+        fill.style.width = percent.toFixed(1) + '%';
+        text.textContent = `${formatSize(sent)} / ${formatSize(total)} (${percent.toFixed(0)}%)`;
+        speed.textContent = formatSpeed(sp);
+      },
+      onDone: () => {
+        showStep('send', 'send-step-done');
+        document.getElementById('sent-summary').textContent = `Отправлено: ${files.length} файл(ов), ${formatSize(totalSize)}`;
+        try { sendState.dc.close(); } catch {}
+        try { sendState.pc.close(); } catch {}
+      },
+      onError: (err) => showToast('Ошибка передачи: ' + err.message, 'error', 5000)
+    });
+  } catch (err) { showToast('Ошибка передачи: ' + err.message, 'error', 5000); }
+}
+
+function resetSend() {
+  sendState.files = []; sendState.transferStarted = false; sendState.answerCode = '';
+  try { sendState.dc && sendState.dc.close(); } catch {}
+  try { sendState.pc && sendState.pc.close(); } catch {}
+  sendState.dc = null; sendState.pc = null;
+  const dz = document.getElementById('drop-zone');
+  if (dz) {
+    dz.classList.remove('has-files');
+    const plus = dz.querySelector('.plus');
+    const title = dz.querySelector('.drop-title');
+    const hint = dz.querySelector('.drop-hint');
+    const list = dz.querySelector('.file-list');
+    if (plus) plus.style.display = '';
+    if (title) title.textContent = 'Выбрать файл';
+    if (hint) hint.textContent = 'Перетащите или выберите из хранилища';
+    if (list) list.remove();
+    const inp = document.getElementById('file-input');
+    if (inp) { try { inp.value = ''; } catch (_) {} }
+  }
+  const inp2 = document.getElementById('offer-code-input'); if (inp2) inp2.value = '';
+  const out = document.getElementById('answer-code-output'); if (out) out.value = '';
+  showStep('send', 'send-step-select');
+}
+
+/* ============ ПОЛУЧАТЕЛЬ ============ */
+const recvState = { pc: null, dc: null, offerCode: '' };
+
+function initReceiver() {
+  document.getElementById('btn-copy-offer').addEventListener('click', async () => {
+    const inp = document.getElementById('offer-code-output');
+    try { await navigator.clipboard.writeText(inp.value); showToast('Код скопирован', 'success'); }
+    catch { inp.select(); document.execCommand('copy'); showToast('Код скопирован', 'success'); }
+  });
+  document.getElementById('btn-recv-home').addEventListener('click', () => { resetReceive(); showScreen('home'); });
+  window.addEventListener('hashchange', checkHashForAnswer);
+}
+
+function checkHashForAnswer() {
+  const h = location.hash || '';
+  const m = h.match(/#answer=([^&]+)/);
+  if (!m) return;
+  const code = decodeURIComponent(m[1]);
+  if (!code) return;
+  showScreen('receive');
+  showStep('receive', 'recv-step-show-qr');
+  const decoded = decodeCode(code);
+  if (!decoded) { showToast('Повреждённый код', 'error'); return; }
+  history.replaceState(null, '', location.pathname + location.search);
+  waitForRecvPc().then(() => applyAnswerToReceiver(decoded));
+}
+
+function waitForRecvPc() {
+  return new Promise((resolve) => {
+    if (recvState.pc) return resolve();
+    const t = setInterval(() => { if (recvState.pc) { clearInterval(t); resolve(); } }, 100);
+    setTimeout(() => { clearInterval(t); resolve(); }, 5000);
+  });
+}
+
+async function applyAnswerToReceiver(answerJson) {
+  try {
+    await applyAnswer(recvState.pc, answerJson);
+    showToast('Соединение установлено', 'success');
+  } catch (err) { showToast('Неверный код: ' + err.message, 'error', 5000); }
+}
+
+async function startReceiveOffer() {
+  const wrap = document.getElementById('offer-qr-wrap');
+  wrap.innerHTML = '<canvas id="offer-qr-canvas"></canvas>';
+  const canvas = document.getElementById('offer-qr-canvas');
+  try {
+    const result = await createOffer((channel, connection) => {
+      recvState.dc = channel; recvState.pc = connection;
+      setupReceiver(channel);
+    });
+    recvState.pc = result.pc; recvState.dc = result.dc;
+    const offerCode = encodeCode(result.json);
+    recvState.offerCode = offerCode;
+    document.getElementById('offer-code-output').value = offerCode;
+    await drawQR(canvas, offerCode, wrap);
+    checkHashForAnswer();
+    recvState.pc.addEventListener('connectionstatechange', () => {
+      const s = recvState.pc.connectionState;
+      if (s === 'failed') showToast('Соединение потеряно', 'error');
+    });
+  } catch (err) { showToast('Ошибка WebRTC: ' + err.message, 'error', 5000); }
+}
+
+function setupReceiver(channel) {
+  channel.binaryType = 'arraybuffer';
+  receiveFiles(channel, {
+    onMeta: (files, total) => {
+      document.getElementById('recv-file-list').textContent = `${files.length} файл(ов), ${formatSize(total)}`;
+      document.getElementById('recv-progress-text').textContent = 'Приём...';
+    },
+    onProgress: (received, total, sp) => {
+      const percent = total ? (received / total) * 100 : 0;
+      document.getElementById('recv-progress-fill').style.width = percent.toFixed(1) + '%';
+      document.getElementById('recv-progress-text').textContent = `${formatSize(received)} / ${formatSize(total)} (${percent.toFixed(0)}%)`;
+      document.getElementById('recv-speed-text').textContent = formatSpeed(sp);
+    },
+    onDone: (files) => {
+      showStep('receive', 'recv-step-done');
+      const total = files.reduce((s, f) => s + f.size, 0);
+      document.getElementById('received-summary').textContent = `Получено: ${files.length} файл(ов), ${formatSize(total)}`;
+      files.forEach(f => {
+        const url = URL.createObjectURL(f);
+        const a = document.createElement('a');
+        a.href = url; a.download = f.name;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      });
+      try { channel.close(); } catch {}
+      try { recvState.pc && recvState.pc.close(); } catch {}
+    },
+    onError: (err) => { console.error(err); showToast('Ошибка приёма', 'error', 5000); }
+  });
+}
+
+function resetReceive() {
+  try { recvState.dc && recvState.dc.close(); } catch {}
+  try { recvState.pc && recvState.pc.close(); } catch {}
+  recvState.dc = null; recvState.pc = null;
+  startReceiveOffer();
+  showStep('receive', 'recv-step-show-qr');
+}
+
+/* ============ iOS подсказка ============ */
+(function() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.navigator.standalone === true ||
+    window.matchMedia('(display-mode: standalone)').matches;
+  const wasShown = localStorage.getItem('filedrop-hint-shown') === '1';
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  if (isIOS && !isStandalone && !wasShown && isSafari) {
+    setTimeout(() => {
+      const el = document.getElementById('ios-install-hint');
+      if (el) el.style.display = 'block';
+    }, 3000);
+  }
+  document.getElementById('ios-hint-close').addEventListener('click', () => {
+    document.getElementById('ios-install-hint').style.display = 'none';
+    localStorage.setItem('filedrop-hint-shown', '1');
+  });
+})();
+
+/* ============ Инициализация ============ */
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+  document.querySelectorAll('[data-goto]').forEach(el => {
+    el.addEventListener('click', () => {
+      const target = el.getAttribute('data-goto');
+      if (target === 'send') { resetSend(); showScreen('send'); }
+      else if (target === 'receive') { showScreen('receive'); startReceiveOffer(); }
+    });
+  });
+  document.getElementById('back-btn').addEventListener('click', () => showScreen('home'));
+  initSender();
+  initReceiver();
+});
 </script>
-
 <script>
   (MRGtag = window.MRGtag || []).push({});
 </script>
-
 </body>
 </html>
